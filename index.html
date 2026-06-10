@@ -333,6 +333,8 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
 .pick-body{padding:11px 12px 13px}
 .pick-name{font-weight:700;font-size:14px;margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pick-go{display:block;text-align:center;background:var(--pink);color:#fff;font-weight:700;font-size:12px;padding:8px;border-radius:9px;transition:.2s}
+.pick-feed{display:block;text-align:center;background:rgba(157,107,255,.15);color:var(--ink);font-weight:600;font-size:11px;padding:7px;border-radius:9px;margin-top:6px;transition:.2s;border:1px solid rgba(157,107,255,.3)}
+.pick-feed:hover{background:rgba(157,107,255,.3)}
 .pick-go:hover{background:#ff5c95}
 .pick-empty{font-size:13px;color:var(--ink-faint);padding:18px 2px}
 
@@ -430,13 +432,9 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
 <section class="sec" id="ranking">
   <div class="wrap">
     <div class="sec-head reveal">
-      <div class="sec-tag">Weekly Chart</div>
-      <h2>週間人気<em>ランキング</em></h2>
-      <p>視聴者数・配信頻度・評価をもとに毎週更新。</p>
-    </div>
-    <div class="tabs reveal">
-      <div class="tab active" data-tab="women">👩 女性ソロ</div>
-      <div class="tab" data-tab="couple">👫 カップル</div>
+      <div class="sec-tag">Live Ranking</div>
+      <h2>いま人気の<em>ランキング</em></h2>
+      <p>配信中の日本人キャストを、視聴者数のリアルタイム順で表示しています。</p>
     </div>
     <div class="rank-list reveal" id="rankList"></div>
   </div>
@@ -448,7 +446,7 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
     <div class="sec-head reveal">
       <div class="sec-tag">Tonight's Picks · Auto</div>
       <h2>今夜の<em>注目キャスト</em></h2>
-      <p>いま配信中の日本人キャストをタグ別に自動ピックアップ。毎晩顔ぶれが変わります。</p>
+      <p>いま配信中の日本人キャストを、盛り上がり・新人・タグ別に自動ピックアップ。リアルタイムで顔ぶれが変わります。各キャストの投稿（フィード）にも飛べます。</p>
     </div>
     <div class="reveal" id="picks"></div>
   </div>
@@ -636,62 +634,48 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
 /* =========================================================
    設定：ここだけ書き換えれば運用できます
    ========================================================= */
-const AFF_ID = "あなたのStripCashのuserId"; // ← 自分の紹介IDに差し替え
+const AFF_ID = "c6a9a4aa77953f455701b02a26df205d1b921d37e3c480978624df61f3430600"; // あなたのStripCash紹介ID
 const AFF_BASE = "https://go.mavrtracktor.com";
-// GAS中継のURL（stripchat-relay.gs をデプロイして得たURLを貼る）
-// 空のままだと下のサンプルデータで表示されます（本番では必ず設定）
+const API_BASE = "https://go.mavrtracktor.com/api/models"; // 公式モデル取得API
+// GAS中継のURL（CORSで直接APIを呼べない場合に使用。空ならAPI直叩きを試行）
 const GAS_URL = "";
 
-// 自動ピックアップする4枠（GAS側のTAGSと一致させる）
+// 自動ピックアップする4枠（各枠が公式APIのどのパラメータで取得するか）
 const PICK_BLOCKS = [
-  {tag:"newbie",   ic:"🔰", ttl:"新人",   sub:"デビューしたて・今だけ"},
-  {tag:"squirt",   ic:"💦", ttl:"潮吹き", sub:"配信中・視聴者数順"},
-  {tag:"big-tits", ic:"🍒", ttl:"巨乳",   sub:"配信中・視聴者数順"},
-  {tag:"cosplay",  ic:"🎀", ttl:"コスプレ",sub:"配信中・視聴者数順"},
+  {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"mlBoost=1"},
+  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"isNew=1"},
+  {key:"squirt", ic:"💦", ttl:"潮吹き", sub:"配信中・人気順", params:"tag=squirt"},
+  {key:"bigtits",ic:"🍒", ttl:"巨乳", sub:"配信中・人気順", params:"tag=big-tits"},
+  {key:"cosplay",ic:"🎀", ttl:"コスプレ", sub:"配信中・人気順", params:"tag=cosplay"},
 ];
-// キャストのライブへ直接飛ばすリンク
-function affLink(username){
+const PICK_LIMIT = 16;       // 各枠の取得人数
+const JP_FILTER = "modelsLanguage=ja"; // 日本人キャストに絞る共通条件
+
+// 各キャストの配信ページ／フィード／写真へ飛ばすリンク
+function affLink(username, path){
   if(!username) return `${AFF_BASE}?userId=${encodeURIComponent(AFF_ID)}`;
-  return `${AFF_BASE}?onlineModels=${encodeURIComponent(username)}&userId=${encodeURIComponent(AFF_ID)}`;
+  let u = `${AFF_BASE}/api/goToTheRoom?modelsList=${encodeURIComponent(username)}`;
+  if(path) u += `&modelPath=${encodeURIComponent(path)}`; // 例: /timeline（フィード）, /photos（写真）
+  u += `&userId=${encodeURIComponent(AFF_ID)}`;
+  return u;
+}
+// 公式APIのデータURL（日本人＋指定パラメータ）
+function apiUrl(params){
+  return `${API_BASE}?${JP_FILTER}&${params}&limit=${PICK_LIMIT}&userId=${encodeURIComponent(AFF_ID)}`;
+}
+// APIのモデル1件を、サイト内共通の形に変換
+function normModel(m){
+  return {
+    username: m.username,
+    name: m.username,
+    online: (m.status === "public"),
+    viewers: m.viewersCount || 0,
+    isNew: m.isNew === true,
+    thumb: m.widgetPreviewUrl || m.snapshotUrl || m.popularSnapshotUrl || "",
+    hd: m.broadcastHD === true
+  };
 }
 
-/* =========================================================
-   キャストデータ（手動登録部分）
-   online は本番ではStripchatの公開オンライン状態で自動更新
-   ========================================================= */
-const CASTS = [
-  {u:"sample_mio",  nm:"みお",    emo:"🌸", online:true,  tags:["可愛い","学生","細身"],     viewers:642, type:"women"},
-  {u:"sample_saya", nm:"さや",    emo:"💎", online:true,  tags:["美人","巨乳","穴場"],       viewers:531, type:"women"},
-  {u:"sample_yui",  nm:"ゆい",    emo:"💕", online:true,  tags:["童顔","カップル","声可愛い"],viewers:498, type:"couple"},
-  {u:"sample_ren",  nm:"れん",    emo:"🔥", online:false, tags:["潮吹き","修正少なめ"],      viewers:417, type:"women"},
-  {u:"sample_aoi",  nm:"あおい",  emo:"🎀", online:true,  tags:["新人","パイパン"],          viewers:388, type:"women"},
-  {u:"sample_nico", nm:"にこ",    emo:"🌙", online:false, tags:["美人","深夜配信"],          viewers:329, type:"women"},
-  {u:"sample_mei",  nm:"めい",    emo:"💜", online:true,  tags:["ギャル系","巨尻"],          viewers:301, type:"women"},
-  {u:"sample_cpl",  nm:"ひかり&かい",emo:"👫",online:false,tags:["カップル","企画"],         viewers:276, type:"couple"},
-];
-
-// 自動ピックアップのサンプルデータ（GAS_URL未設定時の表示用）
-// 本番ではGASがStripchat APIから自動取得して上書きします
-const PICK_SAMPLE = (function(){
-  // 段階表示（初期8→もっと見る）を確認できるよう各タグ多めのサンプルを生成
-  function gen(tag, ic, base, names, newbie){
-    return names.map((nm,i)=>({
-      username: tag+"_"+i,
-      name: nm,
-      online: true,
-      viewers: base - i*17 + (i%3)*9,
-      isNew: newbie || (i%5===0),
-      thumb: "",
-      tags: [tag]
-    }));
-  }
-  return {
-    "newbie":  gen("newbie","🔰",210,["りお","かな","そら","ゆあ","みく","ひな","のあ","せな","あん","りこ","まな","ゆめ"],true),
-    "squirt":  gen("squirt","💦",430,["れん","めい","あおい","さら","ゆうな","かれん","みう","りん","なお","えま","ことね","ひより"],false),
-    "big-tits":gen("big-tits","🍒",540,["さや","はな","まゆ","りさ","あや","ちな","みき","ゆり","かな","ほのか","えり","なつ"],false),
-    "cosplay": gen("cosplay","🎀",280,["みるく","まいまい","ちひろ","ねね","ここ","ゆめか","あいり","しおん","るな","みやび","ことは","ひかり"],false),
-  };
-})();
 
 const MOODS = [
   {emo:"❤️",lbl:"可愛い系"},{emo:"💎",lbl:"美人系"},{emo:"💅",lbl:"ギャル系"},
@@ -718,27 +702,68 @@ const FAQS = [
 /* =========================================================
    描画
    ========================================================= */
+// ===== 公式APIからデータ取得（CORS直叩き→ダメならGAS中継） =====
+async function fetchModels(params){
+  // まずAPI直叩きを試す
+  try{
+    const res = await fetch(apiUrl(params), {headers:{"Accept":"application/json"}});
+    if(res.ok){
+      const json = await res.json();
+      const models = json.models || [];
+      return models.map(normModel);
+    }
+  }catch(e){ /* CORS等で失敗→下のGAS中継へ */ }
+  // GAS中継が設定されていれば、そちら経由で取得
+  if(GAS_URL){
+    try{
+      const res = await fetch(`${GAS_URL}?params=${encodeURIComponent(params)}`);
+      if(res.ok){
+        const json = await res.json();
+        const models = (json.models||json.data||[]);
+        return models.map(normModel);
+      }
+    }catch(e){}
+  }
+  return null; // 取得失敗
+}
+
 const $=s=>document.querySelector(s);
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
 
-// live strip
-const liveSorted=[...CASTS].sort((a,b)=>(b.online-a.online)||(b.viewers-a.viewers));
-const ls=$("#liveStrip");
-liveSorted.forEach(c=>{
-  const card=el("div","live-card");
-  card.innerHTML=`
-    <div class="live-thumb">${c.emo}
-      <span class="badge ${c.online?'on':'off'}"><span class="dot"></span>${c.online?'LIVE':'OFF'}</span>
-    </div>
-    <div class="live-body">
-      <div class="live-name">${c.nm}</div>
-      <div class="live-tags">${c.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
-      <a class="live-link" href="${affLink(c.u)}" target="_blank" rel="noopener">▶ ${c.online?'今すぐ見る':'プロフィール'}</a>
-    </div>`;
-  ls.appendChild(card);
-});
+// ===== 配信中の日本人キャスト一覧（視聴者数順） =====
+async function loadLive(){
+  const ls=$("#liveStrip");
+  // ローディング骨組み
+  ls.innerHTML="";
+  for(let i=0;i<6;i++){ls.appendChild(el("div","live-card",`<div class="live-thumb shimmer"></div><div class="live-body"><div class="live-name">　</div><div class="live-link" style="opacity:.3">　</div></div>`));}
+  const models = await fetchModels("tag=girls");
+  ls.innerHTML="";
+  if(!models || !models.length){
+    ls.appendChild(el("div","pick-empty","いま配信中の日本人キャストを読み込めませんでした。時間をおいて再度お試しください。"));
+    return;
+  }
+  models.sort((a,b)=>b.viewers-a.viewers);
+  models.forEach(c=>{
+    const card=el("div","live-card");
+    const thumbStyle=c.thumb?`style="background-image:url('${c.thumb}')"`:"";
+    card.innerHTML=`
+      <div class="live-thumb" ${thumbStyle}>
+        ${c.thumb?"":'🌸'}
+        <span class="badge ${c.online?'on':'off'}"><span class="dot"></span>${c.online?'LIVE':'OFF'}</span>
+        ${c.online?`<span class="vbadge"><span class="dot"></span>${c.viewers.toLocaleString()}</span>`:''}
+      </div>
+      <div class="live-body">
+        <div class="live-name">${c.name}</div>
+        <a class="live-link" href="${affLink(c.username)}" target="_blank" rel="noopener">▶ 今すぐ見る</a>
+      </div>`;
+    ls.appendChild(card);
+  });
+  // ランキングにも同じデータを流用
+  renderRank(models);
+}
 
-// mood
+// mood（タグ別フィルター：押すと該当タグへ誘導）
+const MOOD_TAGS={"可愛い系":"cute","美人系":"","ギャル系":"","カップル":"couples","企画系":"","ハード系":"","新人":"","深夜配信":""};
 const mg=$("#moodGrid");
 MOODS.forEach(m=>{
   const d=el("div","mood",`<span class="emo">${m.emo}</span><span class="lbl">${m.lbl}</span>`);
@@ -746,109 +771,96 @@ MOODS.forEach(m=>{
   mg.appendChild(d);
 });
 
-// ranking
-function renderRank(type){
-  const list=$("#rankList");list.innerHTML="";
-  const arr=[...CASTS].filter(c=>c.type===type).sort((a,b)=>b.viewers-a.viewers);
+// ===== ランキング（配信中の日本人を視聴者数順に） =====
+function renderRank(models){
+  const list=$("#rankList");if(!list)return;
+  list.innerHTML="";
+  const arr=[...models].sort((a,b)=>b.viewers-a.viewers).slice(0,10);
   arr.forEach((c,i)=>{
     const row=el("a","rank-row");
-    row.href=affLink(c.u);row.target="_blank";row.rel="noopener";
+    row.href=affLink(c.username);row.target="_blank";row.rel="noopener";
     row.innerHTML=`
       <div class="rank-num">${i+1}</div>
-      <div class="rank-info"><div class="nm">${c.nm} ${c.online?'🟢':''}</div><div class="mt">${c.tags.join(' · ')}</div></div>
-      <div class="rank-stat"><div class="v ${c.online?'':'offv'}">${c.online?c.viewers.toLocaleString():'—'}</div><div class="lab">${c.online?'視聴中':'オフライン'}</div></div>`;
+      <div class="rank-info"><div class="nm">${c.name} ${c.online?'🟢':''}${c.isNew?' 🔰':''}</div><div class="mt">${c.hd?'HD配信':'配信中'}</div></div>
+      <div class="rank-stat"><div class="v">${c.viewers.toLocaleString()}</div><div class="lab">視聴中</div></div>`;
     list.appendChild(row);
   });
 }
-renderRank("women");
-document.querySelectorAll(".tab").forEach(t=>{
-  t.onclick=()=>{
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    t.classList.add("active");renderRank(t.dataset.tab);
-  };
-});
 
-// ===== 自動ピックアップ（タグ別 横並び一覧） =====
+// ===== 自動ピックアップ（5枠 横並び一覧・各枠APIから取得） =====
 const picksRoot=$("#picks");
-const PICK_INIT=8; // 初期表示枚数
+const PICK_INIT=8;
 
-function renderPicks(dataByTag){
-  picksRoot.innerHTML="";
-  PICK_BLOCKS.forEach(b=>{
-    const list=(dataByTag&&dataByTag[b.tag])?dataByTag[b.tag]:[];
-    const block=el("div","pick-block");
-    block.innerHTML=`<div class="pick-bar">
-        <span class="pick-ic">${b.ic}</span>
-        <span class="pick-ttl">${b.ttl}<em>ピックアップ</em></span>
-        <span class="pick-sub">${list.length?b.sub+'・'+list.length+'人':b.sub}</span>
-      </div>`;
-    const strip=el("div","pick-strip");
-    if(!list.length){
-      strip.appendChild(el("div","pick-empty","いま配信中のキャストがいません。時間をおいて再チェックしてください。"));
-      block.appendChild(strip);
-    }else{
-      list.forEach((c,i)=>{
-        const card=el("div","pick-card"+(i>=PICK_INIT?" hidden":""));
-        const thumbStyle=c.thumb?`style="background-image:url('${c.thumb}')"`:"";
-        card.innerHTML=`
-          <div class="pick-thumb" ${thumbStyle}>
-            ${c.thumb?"":'<span class="ph">'+b.ic+'</span>'}
-            ${c.isNew?'<span class="newbie-mark">🔰</span>':''}
-            ${c.online?`<span class="vbadge"><span class="dot"></span>${(c.viewers||0).toLocaleString()}</span>`:''}
-          </div>
-          <div class="pick-body">
-            <div class="pick-name">${c.name||c.username}</div>
-            <a class="pick-go" href="${affLink(c.username)}" target="_blank" rel="noopener">▶ 今すぐ見る</a>
-          </div>`;
-        strip.appendChild(card);
-      });
-      block.appendChild(strip);
-      // もっと見る（初期表示を超える件数があるときだけ）
-      if(list.length>PICK_INIT){
-        const mw=el("div","more-wrap");
-        const hiddenN=list.length-PICK_INIT;
-        const btn=el("button","more-btn",`▽ もっと見る（あと${hiddenN}人）`);
-        btn.onclick=()=>{
-          strip.querySelectorAll(".pick-card.hidden").forEach(x=>x.classList.remove("hidden"));
-          mw.remove();
-        };
-        mw.appendChild(btn);
-        block.appendChild(mw);
-      }
+function pickCardHtml(c, ic){
+  const thumbStyle=c.thumb?`style="background-image:url('${c.thumb}')"`:"";
+  return `
+    <div class="pick-thumb" ${thumbStyle}>
+      ${c.thumb?"":'<span class="ph">'+ic+'</span>'}
+      ${c.isNew?'<span class="newbie-mark">🔰</span>':''}
+      ${c.online?`<span class="vbadge"><span class="dot"></span>${(c.viewers||0).toLocaleString()}</span>`:''}
+    </div>
+    <div class="pick-body">
+      <div class="pick-name">${c.name||c.username}</div>
+      <a class="pick-go" href="${affLink(c.username)}" target="_blank" rel="noopener">▶ 今すぐ見る</a>
+      <a class="pick-feed" href="${affLink(c.username,'/timeline')}" target="_blank" rel="noopener">📷 投稿を見る</a>
+    </div>`;
+}
+
+function renderPickBlock(b, models){
+  const block=el("div","pick-block");
+  const n = models?models.length:0;
+  block.innerHTML=`<div class="pick-bar">
+      <span class="pick-ic">${b.ic}</span>
+      <span class="pick-ttl">${b.ttl}</span>
+      <span class="pick-sub">${n?b.sub+'・'+n+'人':b.sub}</span>
+    </div>`;
+  const strip=el("div","pick-strip");
+  if(!models || !models.length){
+    strip.appendChild(el("div","pick-empty","いま配信中のキャストがいません。時間をおいて再チェックしてください。"));
+    block.appendChild(strip);
+  }else{
+    models.forEach((c,i)=>{
+      const card=el("div","pick-card"+(i>=PICK_INIT?" hidden":""));
+      card.innerHTML=pickCardHtml(c, b.ic);
+      strip.appendChild(card);
+    });
+    block.appendChild(strip);
+    if(models.length>PICK_INIT){
+      const mw=el("div","more-wrap");
+      const btn=el("button","more-btn",`▽ もっと見る（あと${models.length-PICK_INIT}人）`);
+      btn.onclick=()=>{strip.querySelectorAll(".pick-card.hidden").forEach(x=>x.classList.remove("hidden"));mw.remove();};
+      mw.appendChild(btn);block.appendChild(mw);
     }
-    picksRoot.appendChild(block);
-  });
+  }
+  return block;
 }
 
-// ローディング骨組みを先に表示
-function renderPicksSkeleton(){
+function pickSkeleton(b){
+  const block=el("div","pick-block");
+  block.innerHTML=`<div class="pick-bar"><span class="pick-ic">${b.ic}</span><span class="pick-ttl">${b.ttl}</span><span class="pick-sub">読み込み中...</span></div>`;
+  const strip=el("div","pick-strip");
+  for(let i=0;i<4;i++){strip.appendChild(el("div","pick-card",`<div class="pick-thumb shimmer"></div><div class="pick-body"><div class="pick-name">　</div><div class="pick-go" style="opacity:.3">　</div></div>`));}
+  block.appendChild(strip);
+  return block;
+}
+
+async function loadPicks(){
   picksRoot.innerHTML="";
-  PICK_BLOCKS.forEach(b=>{
-    const block=el("div","pick-block");
-    block.innerHTML=`<div class="pick-bar"><span class="pick-ic">${b.ic}</span><span class="pick-ttl">${b.ttl}<em>ピックアップ</em></span><span class="pick-sub">読み込み中...</span></div>`;
-    const strip=el("div","pick-strip");
-    for(let i=0;i<4;i++){
-      const c=el("div","pick-card");
-      c.innerHTML=`<div class="pick-thumb shimmer"></div><div class="pick-body"><div class="pick-name">　</div><div class="pick-go" style="opacity:.3">　</div></div>`;
-      strip.appendChild(c);
+  // 各枠の骨組みを先に並べる
+  const slots={};
+  PICK_BLOCKS.forEach(b=>{const sk=pickSkeleton(b);slots[b.key]=sk;picksRoot.appendChild(sk);});
+  // 各枠を順に取得して差し替え
+  for(const b of PICK_BLOCKS){
+    const models = await fetchModels(b.params);
+    const real = renderPickBlock(b, models);
+    if(slots[b.key] && slots[b.key].parentNode){
+      slots[b.key].parentNode.replaceChild(real, slots[b.key]);
     }
-    block.appendChild(strip);picksRoot.appendChild(block);
-  });
+  }
 }
 
-// GASからJSONPで取得（CORS回避）。未設定/失敗時はサンプル表示
-function loadPicks(){
-  renderPicksSkeleton();
-  if(!GAS_URL){ renderPicks(PICK_SAMPLE); return; }
-  const cb="__picksCb"+Date.now();
-  const timer=setTimeout(()=>{cleanup();renderPicks(PICK_SAMPLE);},8000);
-  function cleanup(){delete window[cb];if(s&&s.parentNode)s.parentNode.removeChild(s);clearTimeout(timer);}
-  window[cb]=(res)=>{cleanup();(res&&res.ok&&res.data)?renderPicks(res.data):renderPicks(PICK_SAMPLE);};
-  const s=document.createElement("script");
-  s.src=GAS_URL+(GAS_URL.indexOf("?")>=0?"&":"?")+"callback="+cb;
-  s.onerror=()=>{cleanup();renderPicks(PICK_SAMPLE);};
-  document.body.appendChild(s);
-}
+// 起動
+loadLive();
 loadPicks();
 
 // experiences grid
