@@ -642,13 +642,13 @@ const GAS_URL = "";
 
 // 自動ピックアップする4枠（各枠が公式APIのどのパラメータで取得するか）
 const PICK_BLOCKS = [
-  {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"mlBoost=1"},
-  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"isNew=1"},
-  {key:"squirt", ic:"💦", ttl:"潮吹き", sub:"配信中・人気順", params:"tag=squirt"},
-  {key:"bigtits",ic:"🍒", ttl:"巨乳", sub:"配信中・人気順", params:"tag=big-tits"},
-  {key:"cosplay",ic:"🎀", ttl:"コスプレ", sub:"配信中・人気順", params:"tag=cosplay"},
+  {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"tag=girls&mlBoost=1"},
+  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls&isNew=1&strict=1", onlyNew:true},
+  {key:"squirt", ic:"💦", ttl:"潮吹き", sub:"配信中・人気順", params:"tag=girls/squirt"},
+  {key:"bigtits",ic:"🍒", ttl:"巨乳", sub:"配信中・人気順", params:"tag=girls/big-tits"},
+  {key:"cosplay",ic:"🎀", ttl:"コスプレ", sub:"配信中・人気順", params:"tag=girls/cosplay"},
 ];
-const PICK_LIMIT = 16;       // 各枠の取得人数
+const PICK_LIMIT = 24;       // 各枠の取得人数（フィルタ後に減るため多めに取得）
 const JP_FILTER = "modelsLanguage=ja"; // 日本人キャストに絞る共通条件
 
 // 各キャストの配信ページ／フィード／写真へ飛ばすリンク
@@ -671,10 +671,13 @@ function normModel(m){
     online: (m.status === "public"),
     viewers: m.viewersCount || 0,
     isNew: m.isNew === true,
+    gender: m.gender || "",
     thumb: m.widgetPreviewUrl || m.snapshotUrl || m.popularSnapshotUrl || "",
     hd: m.broadcastHD === true
   };
 }
+// 女性のみ（男性・グループ等を除外）
+function isFemale(c){ return c.gender === "female"; }
 
 
 const MOODS = [
@@ -736,12 +739,13 @@ async function loadLive(){
   // ローディング骨組み
   ls.innerHTML="";
   for(let i=0;i<6;i++){ls.appendChild(el("div","live-card",`<div class="live-thumb shimmer"></div><div class="live-body"><div class="live-name">　</div><div class="live-link" style="opacity:.3">　</div></div>`));}
-  const models = await fetchModels("tag=girls");
+  let models = await fetchModels("tag=girls");
   ls.innerHTML="";
   if(!models || !models.length){
     ls.appendChild(el("div","pick-empty","いま配信中の日本人キャストを読み込めませんでした。時間をおいて再度お試しください。"));
     return;
   }
+  models = models.filter(isFemale);
   models.sort((a,b)=>b.viewers-a.viewers);
   models.forEach(c=>{
     const card=el("div","live-card");
@@ -851,7 +855,15 @@ async function loadPicks(){
   PICK_BLOCKS.forEach(b=>{const sk=pickSkeleton(b);slots[b.key]=sk;picksRoot.appendChild(sk);});
   // 各枠を順に取得して差し替え
   for(const b of PICK_BLOCKS){
-    const models = await fetchModels(b.params);
+    let models = await fetchModels(b.params);
+    if(models){
+      // 必ず女性のみに絞る（男性・グループ等を除外）
+      models = models.filter(isFemale);
+      // 新人枠は、念のためコード側でも新人のみに限定
+      if(b.onlyNew) models = models.filter(c=>c.isNew);
+      // 表示枚数を整える
+      models = models.slice(0, 16);
+    }
     const real = renderPickBlock(b, models);
     if(slots[b.key] && slots[b.key].parentNode){
       slots[b.key].parentNode.replaceChild(real, slots[b.key]);
