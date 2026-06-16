@@ -642,14 +642,14 @@ const GAS_URL = "";
 
 // 自動ピックアップする4枠（各枠が公式APIのどのパラメータで取得するか）
 const PICK_BLOCKS = [
-  {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"tag=girls&mlBoost=1"},
-  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls&isNew=1", onlyNew:true, fetchLimit:200},
-  {key:"squirt", ic:"💦", ttl:"潮吹き", sub:"配信中・人気順", params:"tag=girls/squirt"},
-  {key:"bigtits",ic:"🍒", ttl:"巨乳", sub:"配信中・人気順", params:"tag=girls/big-tits"},
-  {key:"cosplay",ic:"🎀", ttl:"コスプレ", sub:"配信中・人気順", params:"tag=girls/cosplay"},
+  {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"tag=girls/japanese&mlBoost=1"},
+  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls/japanese&isNew=1", onlyNew:true, fetchLimit:200},
+  {key:"squirt", ic:"💦", ttl:"潮吹き", sub:"配信中・人気順", params:"tag=girls/japanese/squirt"},
+  {key:"bigtits",ic:"🍒", ttl:"巨乳", sub:"配信中・人気順", params:"tag=girls/japanese/big-tits"},
+  {key:"cosplay",ic:"🎀", ttl:"コスプレ", sub:"配信中・人気順", params:"tag=girls/japanese/cosplay"},
 ];
 const PICK_LIMIT = 60;       // 各枠の取得人数（女性のみに絞ると減るため多めに取得）
-const JP_FILTER = "modelsLanguage=ja"; // 公式の「言語タグ=日本語(tagLanguageJapanese)」と同じ絞り込み
+const JP_FILTER = ""; // 日本語絞り込みは各枠のタグ girls/japanese が担うため共通フィルタは不要
 
 // 各キャストの配信ページ／フィード／写真へ飛ばすリンク
 function affLink(username, path){
@@ -661,7 +661,8 @@ function affLink(username, path){
 }
 // 公式APIのデータURL（日本人＋指定パラメータ）
 function apiUrl(params, lim){
-  return `${API_BASE}?${JP_FILTER}&${params}&limit=${lim||PICK_LIMIT}&userId=${encodeURIComponent(AFF_ID)}`;
+  const base = JP_FILTER ? `${JP_FILTER}&${params}` : params;
+  return `${API_BASE}?${base}&limit=${lim||PICK_LIMIT}&userId=${encodeURIComponent(AFF_ID)}`;
 }
 // APIのモデル1件を、サイト内共通の形に変換
 function normModel(m){
@@ -677,8 +678,19 @@ function normModel(m){
     thumb: m.widgetPreviewUrl || m.snapshotUrl || m.popularSnapshotUrl || ""
   };
 }
-// 日本語を話すキャスト（公式の「言語タグ=日本語」と同じ判定）
+// 日本語を話すキャスト
 function speaksJa(c){ return c.languages.indexOf("ja") !== -1; }
+// 本物の日本人キャスト判定（公式の tagLanguageJapanese に合わせる）
+// ・日本語を話す AND
+// ・中国語(zh)・韓国語(ko)など他アジア言語を主に持つ海外キャストを除外
+//   （本物の日本人は languages が日本語中心、または国が日本）
+function isJapaneseCast(c){
+  if(!speaksJa(c)) return false;
+  // 中国語・韓国語を含むキャストは、日本人を狙った海外勢として除外
+  if(c.languages.indexOf("zh") !== -1) return false;
+  if(c.languages.indexOf("ko") !== -1) return false;
+  return true;
+}
 // 女性が出ている配信のみ（純粋な男性配信 male/males を除外。female・女性を含むペア maleFemale は表示）
 function isFemale(c){
   const g = (c.gender||"").toLowerCase();
@@ -686,8 +698,8 @@ function isFemale(c){
 }
 // 日本のキャストのみ（国が日本のもの）
 function isJapan(c){ return c.country === "jp"; }
-// 公式サイトと同じ判定：女性で、かつ日本語を話すキャスト
-function passFilter(c){ return isFemale(c) && speaksJa(c); }
+// 公式サイトと同じ：日本語絞り込みは girls/japanese タグが担当。ここでは男性ソロのみ除外。
+function passFilter(c){ return isFemale(c); }
 
 
 const MOODS = [
@@ -749,7 +761,7 @@ async function loadLive(){
   // ローディング骨組み
   ls.innerHTML="";
   for(let i=0;i<6;i++){ls.appendChild(el("div","live-card",`<div class="live-thumb shimmer"></div><div class="live-body"><div class="live-name">　</div><div class="live-link" style="opacity:.3">　</div></div>`));}
-  let models = await fetchModels("tag=girls");
+  let models = await fetchModels("tag=girls/japanese");
   ls.innerHTML="";
   if(!models || !models.length){
     ls.appendChild(el("div","pick-empty","いま配信中の日本人キャストを読み込めませんでした。時間をおいて再度お試しください。"));
