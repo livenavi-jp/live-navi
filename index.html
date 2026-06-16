@@ -642,11 +642,11 @@ const GAS_URL = "";
 
 // 自動ピックアップする4枠（各枠が公式APIのどのパラメータで取得するか）
 const PICK_BLOCKS = [
-  {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"tag=girls/japanese&mlBoost=1"},
-  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls/japanese&isNew=1", onlyNew:true, fetchLimit:200},
-  {key:"squirt", ic:"💦", ttl:"潮吹き", sub:"配信中・人気順", params:"tag=girls/japanese/squirt"},
-  {key:"bigtits",ic:"🍒", ttl:"巨乳", sub:"配信中・人気順", params:"tag=girls/japanese/big-tits"},
-  {key:"cosplay",ic:"🎀", ttl:"コスプレ", sub:"配信中・人気順", params:"tag=girls/japanese/cosplay"},
+  {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"tag=girls/japanese&strict=1&mlBoost=1"},
+  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls/japanese&strict=1&isNew=1", onlyNew:true, fetchLimit:200},
+  {key:"squirt", ic:"💦", ttl:"潮吹き", sub:"配信中・人気順", params:"tag=girls/japanese/squirt&strict=1"},
+  {key:"bigtits",ic:"🍒", ttl:"巨乳", sub:"配信中・人気順", params:"tag=girls/japanese/big-tits&strict=1"},
+  {key:"cosplay",ic:"🎀", ttl:"コスプレ", sub:"配信中・人気順", params:"tag=girls/japanese/cosplay&strict=1"},
 ];
 const PICK_LIMIT = 60;       // 各枠の取得人数（女性のみに絞ると減るため多めに取得）
 const JP_FILTER = ""; // 日本語絞り込みは各枠のタグ girls/japanese が担うため共通フィルタは不要
@@ -698,8 +698,16 @@ function isFemale(c){
 }
 // 日本のキャストのみ（国が日本のもの）
 function isJapan(c){ return c.country === "jp"; }
-// 公式サイトと同じ：日本語絞り込みは girls/japanese タグが担当。ここでは男性ソロのみ除外。
-function passFilter(c){ return isFemale(c); }
+// 公式と同じ：女性で、かつ日本語タグのキャスト。
+// （tagは既定で「優先表示」のため、件数を埋めるために海外勢が末尾に混入することがある。
+//   それをこのクライアント側フィルタで確実に除外する）
+function passFilter(c){
+  if(!isFemale(c)) return false;
+  if(!speaksJa(c)) return false;
+  if(c.languages.indexOf("zh") !== -1) return false;
+  if(c.languages.indexOf("ko") !== -1) return false;
+  return true;
+}
 
 
 const MOODS = [
@@ -761,7 +769,7 @@ async function loadLive(){
   // ローディング骨組み
   ls.innerHTML="";
   for(let i=0;i<6;i++){ls.appendChild(el("div","live-card",`<div class="live-thumb shimmer"></div><div class="live-body"><div class="live-name">　</div><div class="live-link" style="opacity:.3">　</div></div>`));}
-  let models = await fetchModels("tag=girls/japanese");
+  let models = await fetchModels("tag=girls/japanese&strict=1");
   ls.innerHTML="";
   if(!models || !models.length){
     ls.appendChild(el("div","pick-empty","いま配信中の日本人キャストを読み込めませんでした。時間をおいて再度お試しください。"));
