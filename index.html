@@ -643,13 +643,13 @@ const GAS_URL = "";
 // 自動ピックアップする4枠（各枠が公式APIのどのパラメータで取得するか）
 const PICK_BLOCKS = [
   {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"tag=girls&mlBoost=1"},
-  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls&isNew=1&strict=1", onlyNew:true},
+  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls&isNew=1", onlyNew:true, fetchLimit:200},
   {key:"squirt", ic:"💦", ttl:"潮吹き", sub:"配信中・人気順", params:"tag=girls/squirt"},
   {key:"bigtits",ic:"🍒", ttl:"巨乳", sub:"配信中・人気順", params:"tag=girls/big-tits"},
   {key:"cosplay",ic:"🎀", ttl:"コスプレ", sub:"配信中・人気順", params:"tag=girls/cosplay"},
 ];
-const PICK_LIMIT = 24;       // 各枠の取得人数（フィルタ後に減るため多めに取得）
-const JP_FILTER = "modelsLanguage=ja"; // 日本人キャストに絞る共通条件
+const PICK_LIMIT = 60;       // 各枠の取得人数（女性のみに絞ると減るため多めに取得）
+const JP_FILTER = "modelsLanguage=ja&modelsCountry=jp"; // 日本人キャストに絞る共通条件（言語＋国）
 
 // 各キャストの配信ページ／フィード／写真へ飛ばすリンク
 function affLink(username, path){
@@ -660,8 +660,8 @@ function affLink(username, path){
   return u;
 }
 // 公式APIのデータURL（日本人＋指定パラメータ）
-function apiUrl(params){
-  return `${API_BASE}?${JP_FILTER}&${params}&limit=${PICK_LIMIT}&userId=${encodeURIComponent(AFF_ID)}`;
+function apiUrl(params, lim){
+  return `${API_BASE}?${JP_FILTER}&${params}&limit=${lim||PICK_LIMIT}&userId=${encodeURIComponent(AFF_ID)}`;
 }
 // APIのモデル1件を、サイト内共通の形に変換
 function normModel(m){
@@ -672,12 +672,19 @@ function normModel(m){
     viewers: m.viewersCount || 0,
     isNew: m.isNew === true,
     gender: m.gender || "",
-    thumb: m.widgetPreviewUrl || m.snapshotUrl || m.popularSnapshotUrl || "",
-    hd: m.broadcastHD === true
+    country: (m.modelsCountry || "").toLowerCase(),
+    thumb: m.widgetPreviewUrl || m.snapshotUrl || m.popularSnapshotUrl || ""
   };
 }
-// 女性のみ（男性・グループ等を除外）
-function isFemale(c){ return c.gender === "female"; }
+// 女性が出ている配信のみ（純粋な男性配信 male/males を除外。female・女性を含むペア maleFemale は表示）
+function isFemale(c){
+  const g = (c.gender||"").toLowerCase();
+  return g !== "male" && g !== "males" && g !== "trans";
+}
+// 日本のキャストのみ（国が日本のもの）
+function isJapan(c){ return c.country === "jp"; }
+// 女性＋日本の両方を満たすか
+function passFilter(c){ return isFemale(c) && isJapan(c); }
 
 
 const MOODS = [
@@ -706,10 +713,10 @@ const FAQS = [
    描画
    ========================================================= */
 // ===== 公式APIからデータ取得（CORS直叩き→ダメならGAS中継） =====
-async function fetchModels(params){
+async function fetchModels(params, lim){
   // まずAPI直叩きを試す
   try{
-    const res = await fetch(apiUrl(params), {headers:{"Accept":"application/json"}});
+    const res = await fetch(apiUrl(params, lim), {headers:{"Accept":"application/json"}});
     if(res.ok){
       const json = await res.json();
       const models = json.models || [];
@@ -745,7 +752,7 @@ async function loadLive(){
     ls.appendChild(el("div","pick-empty","いま配信中の日本人キャストを読み込めませんでした。時間をおいて再度お試しください。"));
     return;
   }
-  models = models.filter(isFemale);
+  models = models.filter(passFilter);
   models.sort((a,b)=>b.viewers-a.viewers);
   models.forEach(c=>{
     const card=el("div","live-card");
@@ -785,7 +792,7 @@ function renderRank(models){
     row.href=affLink(c.username);row.target="_blank";row.rel="noopener";
     row.innerHTML=`
       <div class="rank-num">${i+1}</div>
-      <div class="rank-info"><div class="nm">${c.name} ${c.online?'🟢':''}${c.isNew?' 🔰':''}</div><div class="mt">${c.hd?'HD配信':'配信中'}</div></div>
+      <div class="rank-info"><div class="nm">${c.name} ${c.online?'🟢':''}${c.isNew?' 🔰':''}</div><div class="mt">配信中</div></div>
       <div class="rank-stat"><div class="v">${c.viewers.toLocaleString()}</div><div class="lab">視聴中</div></div>`;
     list.appendChild(row);
   });
@@ -855,14 +862,14 @@ async function loadPicks(){
   PICK_BLOCKS.forEach(b=>{const sk=pickSkeleton(b);slots[b.key]=sk;picksRoot.appendChild(sk);});
   // 各枠を順に取得して差し替え
   for(const b of PICK_BLOCKS){
-    let models = await fetchModels(b.params);
+    let models = await fetchModels(b.params, b.fetchLimit);
     if(models){
-      // 必ず女性のみに絞る（男性・グループ等を除外）
-      models = models.filter(isFemale);
+      // 必ず女性＋日本に絞る（男性・海外を除外）
+      models = models.filter(passFilter);
       // 新人枠は、念のためコード側でも新人のみに限定
       if(b.onlyNew) models = models.filter(c=>c.isNew);
       // 表示枚数を整える
-      models = models.slice(0, 16);
+      models = models.slice(0, 30);
     }
     const real = renderPickBlock(b, models);
     if(slots[b.key] && slots[b.key].parentNode){
