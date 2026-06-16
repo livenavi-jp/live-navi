@@ -643,7 +643,7 @@ const GAS_URL = "";
 // 自動ピックアップする4枠（各枠が公式APIのどのパラメータで取得するか）
 const PICK_BLOCKS = [
   {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"tag=girls&mlBoost=1"},
-  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls&isNew=1", onlyNew:true, fetchLimit:200},
+  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls&isNew=1", onlyNew:true, fetchLimit:200, looseCountry:true},
   {key:"squirt", ic:"💦", ttl:"潮吹き", sub:"配信中・人気順", params:"tag=girls/squirt"},
   {key:"bigtits",ic:"🍒", ttl:"巨乳", sub:"配信中・人気順", params:"tag=girls/big-tits"},
   {key:"cosplay",ic:"🎀", ttl:"コスプレ", sub:"配信中・人気順", params:"tag=girls/cosplay"},
@@ -864,8 +864,13 @@ async function loadPicks(){
   for(const b of PICK_BLOCKS){
     let models = await fetchModels(b.params, b.fetchLimit);
     if(models){
-      // 必ず女性＋日本に絞る（男性・海外を除外）
-      models = models.filter(passFilter);
+      if(b.looseCountry){
+        // 新人枠：日本語配信の女性新人を広く拾う（国の厳密フィルタは外す）
+        models = models.filter(isFemale);
+      }else{
+        // 通常枠：女性＋日本に絞る（男性・海外を除外）
+        models = models.filter(passFilter);
+      }
       // 新人枠は、念のためコード側でも新人のみに限定
       if(b.onlyNew) models = models.filter(c=>c.isNew);
       // 表示枚数を整える
