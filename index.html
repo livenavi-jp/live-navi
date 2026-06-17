@@ -90,15 +90,17 @@ nav{
 .nav-links{display:flex;gap:20px;margin-left:auto;font-size:14px;font-weight:500}
 .nav-links a{color:var(--ink-dim);transition:.2s}
 .nav-links a:hover{color:var(--ink)}
+.lang-toggle{margin-left:14px;background:transparent;border:1px solid var(--line);color:var(--ink);font-size:12px;font-weight:700;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:.2s}
+.lang-toggle:hover{border-color:var(--pink);color:var(--pink2)}
 .nav-cta{
   background:var(--pink);color:#fff;padding:8px 16px;border-radius:999px;
-  font-weight:700;font-size:13px;white-space:nowrap;
+  font-weight:700;font-size:13px;white-space:nowrap;margin-left:12px;
   box-shadow:0 6px 20px rgba(255,61,127,.35),var(--glow-pink);transition:.2s;
   animation:ctaPulse 2.6s ease-in-out infinite;
 }
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(255,61,127,.6),var(--glow-pink)}
 @keyframes ctaPulse{50%{box-shadow:0 6px 20px rgba(255,61,127,.35),0 0 14px rgba(255,61,127,.9),0 0 34px rgba(255,61,127,.6),0 0 60px rgba(255,61,127,.35)}}
-@media(max-width:760px){.nav-links{display:none}}
+@media(max-width:760px){.nav-links{display:none} .lang-toggle{margin-left:auto}}
 
 /* ===== hero ===== */
 .hero{position:relative;padding:78px 0 60px;text-align:center;overflow:hidden}
@@ -361,58 +363,59 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
 <div id="ageGate">
   <div class="age-box">
     <div class="alogo">ライブ<span>ナビ</span></div>
-    <h2>このサイトは<br>18歳以上限定です</h2>
-    <p>本サイトはアダルト向けライブ配信サービスを紹介しています。<br>あなたは18歳以上ですか？</p>
+    <h2 data-i18n-html="age_h2">このサイトは<br>18歳以上限定です</h2>
+    <p data-i18n-html="age_p">本サイトはアダルト向けライブ配信サービスを紹介しています。<br>あなたは18歳以上ですか？</p>
     <div class="age-btns">
-      <button class="age-yes" id="ageYes">はい、18歳以上です（入場）</button>
-      <button class="age-no" id="ageNo">いいえ / 退出する</button>
+      <button class="age-yes" id="ageYes" data-i18n="age_yes">はい、18歳以上です（入場）</button>
+      <button class="age-no" id="ageNo" data-i18n="age_no">いいえ / 退出する</button>
     </div>
-    <div class="age-fine">「はい」を選択することで、あなたが18歳以上であり、アダルトコンテンツの閲覧が法律で許可されている地域に居住していることに同意したものとみなされます。</div>
+    <div class="age-fine" data-i18n="age_fine">「はい」を選択することで、あなたが18歳以上であり、アダルトコンテンツの閲覧が法律で許可されている地域に居住していることに同意したものとみなされます。</div>
   </div>
 </div>
 <div id="ageDeny">
   <div>
-    <h2>ご利用いただけません</h2>
-    <p>本サイトは18歳以上を対象としています。18歳未満の方はご利用いただけません。ブラウザを閉じてください。</p>
+    <h2 data-i18n="deny_h2">ご利用いただけません</h2>
+    <p data-i18n="deny_p">本サイトは18歳以上を対象としています。18歳未満の方はご利用いただけません。ブラウザを閉じてください。</p>
   </div>
 </div>
 
 <div class="sparkles" id="sparkles"></div>
 
 <div class="alertbar">
-  🎉 Stripchatでは時期によってお得なキャンペーンを随時開催中　<a href="#coin">仕組みを見る →</a>
+  <span data-i18n="alert_text">🎉 Stripchatでは時期によってお得なキャンペーンを随時開催中</span>　<a href="#coin" data-i18n="alert_link">仕組みを見る →</a>
 </div>
 
 <nav>
   <div class="wrap nav-in">
     <div class="logo">ライブ<span>ナビ</span></div>
     <div class="nav-links">
-      <a href="#live">配信中</a>
-      <a href="#ranking">ランキング</a>
-      <a href="#newfaces">新人</a>
-      <a href="#coin">料金ガイド</a>
-      <a href="#howto">使い方</a>
+      <a href="#live" data-i18n="nav_live">配信中</a>
+      <a href="#ranking" data-i18n="nav_ranking">ランキング</a>
+      <a href="#newfaces" data-i18n="nav_new">新人</a>
+      <a href="#coin" data-i18n="nav_coin">料金ガイド</a>
+      <a href="#howto" data-i18n="nav_howto">使い方</a>
     </div>
-    <a class="nav-cta" href="#" data-aff>無料で見る</a>
+    <button class="lang-toggle" id="langToggle">EN</button>
+    <a class="nav-cta" href="#" data-aff data-i18n="nav_cta">無料で見る</a>
   </div>
 </nav>
 
 <header class="hero">
   <div class="wrap">
-    <span class="eyebrow">JAPANESE CAST · CURATED GUIDE</span>
-    <h1 class="reveal">日本人の子と、<br><em>今夜</em>話そう。</h1>
-    <p class="reveal">Stripchatで活躍する日本人キャストを厳選紹介。<br>言葉が通じる安心感で、今すぐ無料で会いに行こう。</p>
+    <span class="eyebrow" data-i18n="hero_eyebrow">JAPANESE CAST · CURATED GUIDE</span>
+    <h1 class="reveal" data-i18n-html="hero_h1">日本人の子と、<br><em>今夜</em>話そう。</h1>
+    <p class="reveal" data-i18n-html="hero_p">Stripchatで活躍する日本人キャストを厳選紹介。<br>言葉が通じる安心感で、今すぐ無料で会いに行こう。</p>
     <div class="hero-btns reveal">
-      <a class="btn-main" href="#" data-aff>▶ 無料で今すぐ見る</a>
-      <a class="btn-ghost" href="#howto">使い方を見る</a>
+      <a class="btn-main" href="#" data-aff data-i18n="hero_btn_main">▶ 無料で今すぐ見る</a>
+      <a class="btn-ghost" href="#howto" data-i18n="hero_btn_ghost">使い方を見る</a>
     </div>
-    <div class="hero-note">18歳以上限定 · 登録無料 · クレジットカード不要</div>
+    <div class="hero-note" data-i18n="hero_note">18歳以上限定 · 登録無料 · クレジットカード不要</div>
     <div class="trust-row">
-      <span class="trust-chip"><span class="ic">✓</span>登録は無料・30秒</span>
-      <span class="trust-chip"><span class="ic">✓</span>クレカ登録なしでOK</span>
-      <span class="trust-chip"><span class="ic">✓</span>使った分だけの前払い式</span>
-      <span class="trust-chip"><span class="ic">✓</span>退会はいつでも簡単</span>
-      <span class="trust-chip"><span class="ic">✓</span>日本語で利用可能</span>
+      <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_free30">登録は無料・30秒</span></span>
+      <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_nocard">クレカ登録なしでOK</span></span>
+      <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_prepaid">使った分だけの前払い式</span></span>
+      <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_cancel">退会はいつでも簡単</span></span>
+      <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_jp">日本語で利用可能</span></span>
     </div>
   </div>
 </header>
@@ -422,8 +425,8 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="sec-tag">Live Now</div>
-      <h2>いま<em>配信中</em>のキャスト</h2>
-      <p>オンライン状態はリアルタイムで自動更新。LIVEバッジの子は今すぐ会えます。</p>
+      <h2 data-i18n-html="live_h2">いま<em>配信中</em>のキャスト</h2>
+      <p data-i18n="live_p">オンライン状態はリアルタイムで自動更新。LIVEバッジの子は今すぐ会えます。</p>
     </div>
     <div class="live-strip reveal" id="liveStrip"></div>
   </div>
@@ -434,20 +437,20 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="sec-tag">Find Your Type</div>
-      <h2>理想のタイプで<em>絞り込む</em></h2>
-      <p>体型や状態を選ぶと、今すぐ会える日本人キャストが見つかります。複数選んでもOK。</p>
+      <h2 data-i18n-html="mood_h2">理想のタイプで<em>絞り込む</em></h2>
+      <p data-i18n="mood_p">体型や状態を選ぶと、今すぐ会える日本人キャストが見つかります。複数選んでもOK。</p>
     </div>
     <div class="filter-panel reveal">
       <div class="filter-row">
-        <span class="filter-label">体型</span>
+        <span class="filter-label" data-i18n="filter_body">体型</span>
         <div class="filter-btns" id="filterBody"></div>
       </div>
       <div class="filter-row">
-        <span class="filter-label">状態</span>
+        <span class="filter-label" data-i18n="filter_state">状態</span>
         <div class="filter-btns" id="filterState"></div>
       </div>
       <div class="filter-actions">
-        <button class="filter-clear" id="filterClear">条件をクリア</button>
+        <button class="filter-clear" id="filterClear" data-i18n="filter_clear">条件をクリア</button>
       </div>
     </div>
     <div class="reveal" id="filterResult"></div>
@@ -459,8 +462,8 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="sec-tag">Live Ranking</div>
-      <h2>いま人気の<em>ランキング</em></h2>
-      <p>配信中の日本人キャストを、視聴者数のリアルタイム順で表示しています。</p>
+      <h2 data-i18n-html="rank_h2">いま人気の<em>ランキング</em></h2>
+      <p data-i18n="rank_p">配信中の日本人キャストを、視聴者数のリアルタイム順で表示しています。</p>
     </div>
     <div class="rank-list reveal" id="rankList"></div>
   </div>
@@ -471,8 +474,8 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="sec-tag">Tonight's Picks · Auto</div>
-      <h2>今夜の<em>注目キャスト</em></h2>
-      <p>いま配信中の日本人キャストを、盛り上がり・新人・タグ別に自動ピックアップ。リアルタイムで顔ぶれが変わります。各キャストの投稿（フィード）にも飛べます。</p>
+      <h2 data-i18n-html="picks_h2">今夜の<em>注目キャスト</em></h2>
+      <p data-i18n="picks_p">いま配信中の日本人キャストを、盛り上がり・新人・タグ別に自動ピックアップ。リアルタイムで顔ぶれが変わります。各キャストの投稿（フィード）にも飛べます。</p>
     </div>
     <div class="reveal" id="picks"></div>
   </div>
@@ -483,33 +486,33 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="sec-tag">Coin Guide</div>
-      <h2>トークン（コイン）の<em>仕組み</em></h2>
-      <p>Stripchatは「使った分だけ」の前払い式。月額や登録料はかからず、必要なときにトークンを買って使います。</p>
+      <h2 data-i18n-html="coin_h2">トークン（コイン）の<em>仕組み</em></h2>
+      <p data-i18n="coin_p">Stripchatは「使った分だけ」の前払い式。月額や登録料はかからず、必要なときにトークンを買って使います。</p>
     </div>
     <div class="coin-wrap reveal">
       <div class="coin-points">
         <div class="cpoint">
           <div class="cp-ic">🪙</div>
-          <div class="cp-tx"><b>トークン＝サイト内通貨</b><br>チップ、プライベートショー、限定コンテンツなどに使います。まとめて買うほど1枚あたりが割安になる仕組みです。</div>
+          <div class="cp-tx" data-i18n-html="coin_p1"><b>トークン＝サイト内通貨</b><br>チップ、プライベートショー、限定コンテンツなどに使います。まとめて買うほど1枚あたりが割安になる仕組みです。</div>
         </div>
         <div class="cpoint">
           <div class="cp-ic">🎁</div>
-          <div class="cp-tx"><b>時期によってお得なキャンペーン</b><br>新規登録者向けのボーナスや割引などが随時行われています。内容は時期によって変わります。</div>
+          <div class="cp-tx" data-i18n-html="coin_p2"><b>時期によってお得なキャンペーン</b><br>新規登録者向けのボーナスや割引などが随時行われています。内容は時期によって変わります。</div>
         </div>
         <div class="cpoint">
           <div class="cp-ic">✅</div>
-          <div class="cp-tx"><b>最新・正確な価格は公式の購入画面で</b><br>価格は地域・支払い方法・キャンペーンで変わります。登録後の購入画面で、いまのあなたに適用される正確な価格とセールを確認できます。</div>
+          <div class="cp-tx" data-i18n-html="coin_p3"><b>最新・正確な価格は公式の購入画面で</b><br>価格は地域・支払い方法・キャンペーンで変わります。登録後の購入画面で、いまのあなたに適用される正確な価格とセールを確認できます。</div>
         </div>
       </div>
       <div class="coin-cta">
-        <a class="btn-main" href="#" data-aff>▶ 無料登録して最新価格を見る</a>
+        <a class="btn-main" href="#" data-aff data-i18n="coin_cta">▶ 無料登録して最新価格を見る</a>
         <div class="trust-row">
-          <span class="trust-chip"><span class="ic">✓</span>登録は無料・カード不要</span>
-          <span class="trust-chip"><span class="ic">✓</span>使った分だけの前払い式</span>
-          <span class="trust-chip"><span class="ic">✓</span>勝手な課金は発生しません</span>
+          <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_freecard">登録は無料・カード不要</span></span>
+          <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_prepaid2">使った分だけの前払い式</span></span>
+          <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_nocharge">勝手な課金は発生しません</span></span>
         </div>
       </div>
-      <p class="coin-note">※トークンの価格・キャンペーン内容は時期や地域、支払い方法により変動します。最新かつ正確な情報は必ずStripchat公式の購入画面でご確認ください。</p>
+      <p class="coin-note" data-i18n="coin_note">※トークンの価格・キャンペーン内容は時期や地域、支払い方法により変動します。最新かつ正確な情報は必ずStripchat公式の購入画面でご確認ください。</p>
     </div>
   </div>
 </section>
@@ -519,8 +522,8 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="sec-tag">What You Get</div>
-      <h2>トークンで<em>広がる体験</em></h2>
-      <p>トークンを使うと、ただ観るだけでは味わえない距離の近さや特別な時間が楽しめます。必要なトークン数は各キャストのページに表示されます。</p>
+      <h2 data-i18n-html="show_h2">トークンで<em>広がる体験</em></h2>
+      <p data-i18n="show_p">トークンを使うと、ただ観るだけでは味わえない距離の近さや特別な時間が楽しめます。必要なトークン数は各キャストのページに表示されます。</p>
     </div>
     <div class="exp-grid reveal" id="expGrid"></div>
   </div>
@@ -531,31 +534,31 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="sec-tag">Free vs Member</div>
-      <h2>登録すると、<em>何が変わる？</em></h2>
-      <p>登録は無料・カード不要。それでも、できることは大きく広がります。</p>
+      <h2 data-i18n-html="cmp_h2">登録すると、<em>何が変わる？</em></h2>
+      <p data-i18n="cmp_p">登録は無料・カード不要。それでも、できることは大きく広がります。</p>
     </div>
     <div class="cmp-wrap reveal">
       <table class="cmp">
         <thead>
-          <tr><th>できること</th><th>未登録</th><th class="hl">無料登録（おすすめ）</th></tr>
+          <tr><th data-i18n="cmp_col1">できること</th><th data-i18n="cmp_col2">未登録</th><th class="hl" data-i18n="cmp_col3">無料登録（おすすめ）</th></tr>
         </thead>
         <tbody>
-          <tr><th>ライブ配信を見る</th><td class="no">△ 一部制限</td><td class="hl"><span class="yes">○</span></td></tr>
-          <tr><th>キャストとチャット</th><td class="no">✕</td><td class="hl"><span class="yes">○</span></td></tr>
-          <tr><th>お気に入り登録・通知</th><td class="no">✕</td><td class="hl"><span class="yes">○</span></td></tr>
-          <tr><th>無料スピンでトークン獲得</th><td class="no">✕</td><td class="hl"><span class="yes">○</span></td></tr>
-          <tr><th>プライベートショー</th><td class="no">✕</td><td class="hl"><span class="yes">○</span></td></tr>
-          <tr><th>登録料・月額</th><td><span class="yes">無料</span></td><td class="hl"><span class="yes">無料</span></td></tr>
-          <tr><th>クレジットカード</th><td>不要</td><td class="hl"><span class="yes">不要</span></td></tr>
+          <tr><th data-i18n="cmp_r1">ライブ配信を見る</th><td class="no" data-i18n="cmp_r1v">△ 一部制限</td><td class="hl"><span class="yes">○</span></td></tr>
+          <tr><th data-i18n="cmp_r2">キャストとチャット</th><td class="no">✕</td><td class="hl"><span class="yes">○</span></td></tr>
+          <tr><th data-i18n="cmp_r3">お気に入り登録・通知</th><td class="no">✕</td><td class="hl"><span class="yes">○</span></td></tr>
+          <tr><th data-i18n="cmp_r4">無料スピンでトークン獲得</th><td class="no">✕</td><td class="hl"><span class="yes">○</span></td></tr>
+          <tr><th data-i18n="cmp_r5">プライベートショー</th><td class="no">✕</td><td class="hl"><span class="yes">○</span></td></tr>
+          <tr><th data-i18n="cmp_r6">登録料・月額</th><td><span class="yes" data-i18n="cmp_free">無料</span></td><td class="hl"><span class="yes" data-i18n="cmp_free2">無料</span></td></tr>
+          <tr><th data-i18n="cmp_r7">クレジットカード</th><td data-i18n="cmp_none">不要</td><td class="hl"><span class="yes" data-i18n="cmp_none2">不要</span></td></tr>
         </tbody>
       </table>
     </div>
     <div class="cmp-cta reveal">
-      <a class="btn-main" href="#" data-aff>▶ 無料登録でぜんぶ使う</a>
+      <a class="btn-main" href="#" data-aff data-i18n="cmp_cta">▶ 無料登録でぜんぶ使う</a>
       <div class="trust-row">
-        <span class="trust-chip"><span class="ic">✓</span>メールだけ30秒</span>
-        <span class="trust-chip"><span class="ic">✓</span>勝手な課金なし（前払い式）</span>
-        <span class="trust-chip"><span class="ic">✓</span>退会いつでも</span>
+        <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_email30">メールだけ30秒</span></span>
+        <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_noauto">勝手な課金なし（前払い式）</span></span>
+        <span class="trust-chip"><span class="ic">✓</span><span data-i18n="chip_cancelany">退会いつでも</span></span>
       </div>
     </div>
   </div>
@@ -566,13 +569,13 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="sec-tag">How To Start</div>
-      <h2>はじめての方へ</h2>
-      <p>登録から視聴まで、すべて日本語でOK。最短30秒で始められます。</p>
+      <h2 data-i18n="howto_h2">はじめての方へ</h2>
+      <p data-i18n="howto_p">登録から視聴まで、すべて日本語でOK。最短30秒で始められます。</p>
     </div>
     <div class="steps reveal">
-      <div class="step"><div class="n">I</div><h4>無料登録</h4><p>メールだけ・30秒。クレジットカード不要で今すぐ始められます。</p></div>
-      <div class="step"><div class="n">II</div><h4>モデルを探す</h4><p>気分・タイプで絞り込み。日本人キャストをすぐ見つけられます。</p></div>
-      <div class="step"><div class="n">III</div><h4>無料で楽しむ</h4><p>多くの配信は無料視聴OK。気に入ったらコインでもっと近づけます。</p></div>
+      <div class="step"><div class="n">I</div><h4 data-i18n="step1_t">無料登録</h4><p data-i18n="step1_d">メールだけ・30秒。クレジットカード不要で今すぐ始められます。</p></div>
+      <div class="step"><div class="n">II</div><h4 data-i18n="step2_t">モデルを探す</h4><p data-i18n="step2_d">気分・タイプで絞り込み。日本人キャストをすぐ見つけられます。</p></div>
+      <div class="step"><div class="n">III</div><h4 data-i18n="step3_t">無料で楽しむ</h4><p data-i18n="step3_d">多くの配信は無料視聴OK。気に入ったらコインでもっと近づけます。</p></div>
     </div>
   </div>
 </section>
@@ -582,7 +585,7 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="sec-tag">FAQ</div>
-      <h2>よくある<em>質問</em></h2>
+      <h2 data-i18n-html="faq_h2">よくある<em>質問</em></h2>
     </div>
     <div class="reveal" id="faq"></div>
   </div>
@@ -591,9 +594,9 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
 <!-- FINAL CTA -->
 <div class="wrap">
   <div class="final reveal">
-    <h2 class="serif">今夜、<span class="accent">出会う。</span></h2>
-    <p>人気キャストが今この瞬間もライブ配信中。登録30秒・完全無料でその扉を開けてみてください。</p>
-    <a class="btn-main" href="#" data-aff>▶ Stripchatを無料で始める</a>
+    <h2 class="serif" data-i18n-html="final_h2">今夜、<span class="accent">出会う。</span></h2>
+    <p data-i18n="final_p">人気キャストが今この瞬間もライブ配信中。登録30秒・完全無料でその扉を開けてみてください。</p>
+    <a class="btn-main" href="#" data-aff data-i18n="final_cta">▶ Stripchatを無料で始める</a>
     <div class="hero-note">18歳以上限定 · 登録無料 · クレジットカード不要</div>
   </div>
 </div>
@@ -601,22 +604,172 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
 <footer>
   <div class="wrap">
     <div class="foot-links">
-      <a href="#ranking">ランキング</a>
-      <a href="#newfaces">新人一覧</a>
-      <a href="#howto">使い方ガイド</a>
-      <a href="#coin">料金ガイド</a>
-      <a href="#">このサイトについて</a>
-      <a href="#">免責事項</a>
+      <a href="#ranking" data-i18n="foot_ranking">ランキング</a>
+      <a href="#newfaces" data-i18n="foot_new">新人一覧</a>
+      <a href="#howto" data-i18n="foot_howto">使い方ガイド</a>
+      <a href="#coin" data-i18n="foot_coin">料金ガイド</a>
+      <a href="#" data-i18n="foot_about">このサイトについて</a>
+      <a href="#" data-i18n="foot_disc">免責事項</a>
     </div>
     <div class="foot-note">
-      当サイトはStripchatアフィリエイトプログラム参加サイトです。<br>
-      本サービスは18歳以上を対象としています。未成年者のアクセスはご遠慮ください。<br>
+      <span data-i18n-html="foot_note">当サイトはStripchatアフィリエイトプログラム参加サイトです。<br>
+      本サービスは18歳以上を対象としています。未成年者のアクセスはご遠慮ください。</span><br>
       © 2026 ライブナビ. All rights reserved.
     </div>
   </div>
 </footer>
 
 <script>
+/* ===== 多言語（日本語 / English）===== */
+const I18N = {
+  ja: {
+    nav_live:"配信中", nav_ranking:"ランキング", nav_new:"新人", nav_coin:"料金ガイド", nav_howto:"使い方", nav_cta:"無料で見る",
+    hero_eyebrow:"JAPANESE CAST · CURATED GUIDE",
+    hero_h1:"日本人の子と、<br><em>今夜</em>話そう。",
+    hero_p:"Stripchatで活躍する日本人キャストを厳選紹介。<br>言葉が通じる安心感で、今すぐ無料で会いに行こう。",
+    hero_btn_main:"▶ 無料で今すぐ見る", hero_btn_ghost:"使い方を見る",
+    hero_note:"18歳以上限定 · 登録無料 · クレジットカード不要",
+    chip_free30:"登録は無料・30秒", chip_nocard:"クレカ登録なしでOK", chip_prepaid:"使った分だけの前払い式", chip_cancel:"退会はいつでも簡単", chip_jp:"日本語で利用可能",
+    age_h2:"このサイトは<br>18歳以上限定です",
+    age_p:"本サイトはアダルト向けライブ配信サービスを紹介しています。<br>あなたは18歳以上ですか？",
+    age_yes:"はい、18歳以上です（入場）", age_no:"いいえ / 退出する",
+    age_fine:"「はい」を選択することで、あなたが18歳以上であり、アダルトコンテンツの閲覧が法律で許可されている地域に居住していることに同意したものとみなされます。",
+    deny_h2:"ご利用いただけません", deny_p:"本サイトは18歳以上を対象としています。18歳未満の方はご利用いただけません。ブラウザを閉じてください。",
+    alert_text:"🎉 Stripchatでは時期によってお得なキャンペーンを随時開催中", alert_link:"仕組みを見る →",
+    live_h2:"いま<em>配信中</em>のキャスト", live_p:"オンライン状態はリアルタイムで自動更新。LIVEバッジの子は今すぐ会えます。",
+    mood_h2:"理想のタイプで<em>絞り込む</em>", mood_p:"体型や状態を選ぶと、今すぐ会える日本人キャストが見つかります。複数選んでもOK。",
+    filter_body:"体型", filter_state:"状態", filter_clear:"条件をクリア",
+    rank_h2:"いま人気の<em>ランキング</em>", rank_p:"配信中の日本人キャストを、視聴者数のリアルタイム順で表示しています。",
+    picks_h2:"今夜の<em>注目キャスト</em>", picks_p:"いま配信中の日本人キャストを、盛り上がり・新人・タグ別に自動ピックアップ。リアルタイムで顔ぶれが変わります。各キャストの投稿（フィード）にも飛べます。",
+    coin_h2:"トークン（コイン）の<em>仕組み</em>", coin_p:"Stripchatは「使った分だけ」の前払い式。月額や登録料はかからず、必要なときにトークンを買って使います。",
+    coin_p1:"<b>トークン＝サイト内通貨</b><br>チップ、プライベートショー、限定コンテンツなどに使います。まとめて買うほど1枚あたりが割安になる仕組みです。",
+    coin_p2:"<b>時期によってお得なキャンペーン</b><br>新規登録者向けのボーナスや割引などが随時行われています。内容は時期によって変わります。",
+    coin_p3:"<b>最新・正確な価格は公式の購入画面で</b><br>価格は地域・支払い方法・キャンペーンで変わります。登録後の購入画面で、いまのあなたに適用される正確な価格とセールを確認できます。",
+    coin_cta:"▶ 無料登録して最新価格を見る", chip_freecard:"登録は無料・カード不要", chip_prepaid2:"使った分だけの前払い式", chip_nocharge:"勝手な課金は発生しません",
+    coin_note:"※トークンの価格・キャンペーン内容は時期や地域、支払い方法により変動します。最新かつ正確な情報は必ずStripchat公式の購入画面でご確認ください。",
+    show_h2:"トークンで<em>広がる体験</em>", show_p:"トークンを使うと、ただ観るだけでは味わえない距離の近さや特別な時間が楽しめます。必要なトークン数は各キャストのページに表示されます。",
+    cmp_h2:"登録すると、<em>何が変わる？</em>", cmp_p:"登録は無料・カード不要。それでも、できることは大きく広がります。",
+    cmp_col1:"できること", cmp_col2:"未登録", cmp_col3:"無料登録（おすすめ）",
+    cmp_r1:"ライブ配信を見る", cmp_r1v:"△ 一部制限", cmp_r2:"キャストとチャット", cmp_r3:"お気に入り登録・通知", cmp_r4:"無料スピンでトークン獲得", cmp_r5:"プライベートショー", cmp_r6:"登録料・月額", cmp_free:"無料", cmp_free2:"無料", cmp_r7:"クレジットカード", cmp_none:"不要", cmp_none2:"不要",
+    cmp_cta:"▶ 無料登録でぜんぶ使う", chip_email30:"メールだけ30秒", chip_noauto:"勝手な課金なし（前払い式）", chip_cancelany:"退会いつでも",
+    howto_h2:"はじめての方へ", howto_p:"登録から視聴まで、すべて日本語でOK。最短30秒で始められます。",
+    step1_t:"無料登録", step1_d:"メールだけ・30秒。クレジットカード不要で今すぐ始められます。",
+    step2_t:"モデルを探す", step2_d:"気分・タイプで絞り込み。日本人キャストをすぐ見つけられます。",
+    step3_t:"無料で楽しむ", step3_d:"多くの配信は無料視聴OK。気に入ったらコインでもっと近づけます。",
+    faq_h2:"よくある<em>質問</em>",
+    final_h2:"今夜、<span class=\"accent\">出会う。</span>", final_p:"人気キャストが今この瞬間もライブ配信中。登録30秒・完全無料でその扉を開けてみてください。", final_cta:"▶ Stripchatを無料で始める",
+    foot_ranking:"ランキング", foot_new:"新人一覧", foot_howto:"使い方ガイド", foot_coin:"料金ガイド", foot_about:"このサイトについて", foot_disc:"免責事項",
+    foot_note:"当サイトはStripchatアフィリエイトプログラム参加サイトです。<br>本サービスは18歳以上を対象としています。未成年者のアクセスはご遠慮ください。",
+    // JS-generated
+    pick_hot_ttl:"今盛り上がってる", pick_hot_sub:"ライブ配信中",
+    pick_new_ttl:"今夜のおすすめ新人", pick_new_sub:"デビューしたて",
+    body_thin:"細身", body_average:"標準", body_athletic:"アスリート", body_curvy:"グラマー", body_large:"ぽっちゃり",
+    state_new:"🔰 新人", state_boost:"🔥 今盛り上がってる",
+    btn_watch:"▶ 今すぐ見る", btn_feed:"📷 投稿を見る", btn_more:"▽ もっと見る（あと{n}人）",
+    live_err:t("live_err"),
+    filter_empty:t("filter_empty"),
+    filter_result:"絞り込み結果", unit_people:"人", lab_watching:"視聴中", pick_empty:t("pick_empty"),
+    faq:[
+      {q:"Stripchatは完全無料で使えますか？",a:"はい、登録・閲覧は完全無料です。多くのライブは無料で視聴できます。プライベートチャットや一部の特別ショーにコインが必要ですが、まず無料で体験してから判断できます。"},
+      {q:"日本語で利用できますか？",a:"サイト自体が日本語UIに対応しています。日本人キャストを選べば日本語チャットも可能です。"},
+      {q:"スマホでも使えますか？",a:"iOS・Androidのブラウザから快適に利用できます。専用アプリもあり、より見やすい視聴体験が可能です。"},
+      {q:"個人情報は安全ですか？",a:"世界で数千万人が利用する大手サービスで、SSL暗号化のもと管理されています。ニックネームでの利用も可能です。"}
+    ],
+    exp:[
+      {ic:"💬", t:"チャットで話しかける", d:"配信中のキャストにメッセージを送れます。リアクションが返ってくると、ぐっと距離が縮まります。"},
+      {ic:"🎁", t:"チップを贈る", d:"応援の気持ちをトークンで届けられます。贈ると名前を呼んでもらえたり、特別に反応してくれることも。"},
+      {ic:"🔒", t:"プライベートショー", d:"2人だけの特別な時間。ほかの視聴者には見られない、1対1のやり取りを楽しめます。"},
+      {ic:"✨", t:"リクエスト・メニュー", d:"見たい内容をキャストにお願いできます。何ができるかは各キャストのメニューに書かれています。"},
+      {ic:"🖼️", t:"限定コンテンツ", d:"キャストが公開している写真や動画を購入できます。配信では見られない特別な一面も。"},
+      {ic:"⭐", t:"ファンクラブ・継続応援", d:"お気に入りのキャストを継続して応援できる仕組み。特典が用意されていることもあります。"}
+    ]
+  },
+  en: {
+    nav_live:"Live", nav_ranking:"Ranking", nav_new:"New", nav_coin:"Tokens", nav_howto:"How To", nav_cta:"Watch Free",
+    hero_eyebrow:"JAPANESE CAST · CURATED GUIDE",
+    hero_h1:"Meet Real Japanese<br>Cam Girls <em>Tonight</em>",
+    hero_p:"A curated guide to authentic Japanese performers on Stripchat.<br>So many styles to discover — once you start, you won't look away.",
+    hero_btn_main:"▶ Watch Free Now", hero_btn_ghost:"How It Works",
+    hero_note:"18+ only · Free signup · No credit card required",
+    chip_free30:"Free signup · 30 sec", chip_nocard:"No card needed", chip_prepaid:"Pay only for what you use", chip_cancel:"Cancel anytime", chip_jp:"Japanese-friendly",
+    age_h2:"This site is<br>for adults 18+ only",
+    age_p:"This site introduces adult live-cam services.<br>Are you 18 years or older?",
+    age_yes:"Yes, I'm 18+ (Enter)", age_no:"No / Leave",
+    age_fine:"By choosing \"Yes,\" you confirm that you are 18 or older and that viewing adult content is legal in your region.",
+    deny_h2:"Access not available", deny_p:"This site is intended for adults 18 and over. If you are under 18, you may not use it. Please close your browser.",
+    alert_text:"🎉 Stripchat runs special promotions from time to time", alert_link:"See how it works →",
+    live_h2:"<em>Live</em> Right Now", live_p:"Online status updates in real time. Anyone with a LIVE badge is available to meet right now.",
+    mood_h2:"Find Your <em>Ideal Type</em>", mood_p:"Pick a body type or status to find Japanese cam girls live right now. Combine filters freely.",
+    filter_body:"Body", filter_state:"Status", filter_clear:"Clear filters",
+    rank_h2:"Trending <em>Ranking</em>", rank_p:"Japanese cam girls who are live now, ranked by real-time viewer count.",
+    picks_h2:"Tonight's <em>Featured Cast</em>", picks_p:"Japanese cam girls live right now, auto-curated by buzz and newcomers. The lineup changes in real time. You can also jump to each cast's feed.",
+    coin_h2:"How <em>Tokens</em> Work", coin_p:"Stripchat is prepaid — you pay only for what you use. No monthly fee, no signup fee. Just buy tokens when you need them.",
+    coin_p1:"<b>Tokens = on-site currency</b><br>Used for tips, private shows, exclusive content and more. The more you buy at once, the cheaper each token gets.",
+    coin_p2:"<b>Seasonal promotions</b><br>Bonuses and discounts for new members run from time to time. Offers change by season.",
+    coin_p3:"<b>See the latest exact price on the official purchase screen</b><br>Prices vary by region, payment method and promotion. After signing up, the purchase screen shows the exact price and sales that apply to you.",
+    coin_cta:"▶ Sign up free & see latest prices", chip_freecard:"Free signup · no card", chip_prepaid2:"Pay only for what you use", chip_nocharge:"No surprise charges",
+    coin_note:"*Token prices and promotions vary by season, region and payment method. Always check the official Stripchat purchase screen for the latest, accurate information.",
+    show_h2:"What Tokens <em>Unlock</em>", show_p:"With tokens you get closeness and special moments you can't get from just watching. The number of tokens needed is shown on each cast's page.",
+    cmp_h2:"What Changes <em>When You Sign Up?</em>", cmp_p:"Signup is free and needs no card — yet it opens up far more.",
+    cmp_col1:"What you can do", cmp_col2:"Not registered", cmp_col3:"Free signup (recommended)",
+    cmp_r1:"Watch live streams", cmp_r1v:"△ Limited", cmp_r2:"Chat with casts", cmp_r3:"Favorites & alerts", cmp_r4:"Earn tokens via free spin", cmp_r5:"Private shows", cmp_r6:"Signup / monthly fee", cmp_free:"Free", cmp_free2:"Free", cmp_r7:"Credit card", cmp_none:"Not needed", cmp_none2:"Not needed",
+    cmp_cta:"▶ Sign up free & use it all", chip_email30:"Email only · 30 sec", chip_noauto:"No auto-charges (prepaid)", chip_cancelany:"Cancel anytime",
+    howto_h2:"New Here?", howto_p:"From signup to watching — start in as little as 30 seconds.",
+    step1_t:"Free signup", step1_d:"Email only, 30 seconds. No credit card needed — start right away.",
+    step2_t:"Find a model", step2_d:"Filter by mood and type. Find Japanese cam girls in seconds.",
+    step3_t:"Enjoy free", step3_d:"Most streams are free to watch. Like someone? Get closer with tokens.",
+    faq_h2:"Frequently Asked <em>Questions</em>",
+    final_h2:"Meet her, <span class=\"accent\">tonight.</span>", final_p:"Popular casts are live this very moment. Sign up in 30 seconds, totally free, and open the door.", final_cta:"▶ Start Stripchat for free",
+    foot_ranking:"Ranking", foot_new:"New casts", foot_howto:"How-to guide", foot_coin:"Token guide", foot_about:"About this site", foot_disc:"Disclaimer",
+    foot_note:"This site participates in the Stripchat affiliate program.<br>This service is intended for adults 18+. Minors are not permitted to access it.",
+    pick_hot_ttl:"Buzzing Now", pick_hot_sub:"Live now",
+    pick_new_ttl:"Tonight's New Faces", pick_new_sub:"Just debuted",
+    body_thin:"Slim", body_average:"Average", body_athletic:"Athletic", body_curvy:"Curvy", body_large:"Plus-size",
+    state_new:"🔰 New", state_boost:"🔥 Buzzing now",
+    btn_watch:"▶ Watch now", btn_feed:"📷 View posts", btn_more:"▽ Show more ({n} more)",
+    live_err:"Couldn't load Japanese cam girls who are live now. Please try again later.",
+    filter_empty:"No Japanese cam girls matching your filters are live right now. Try different filters.",
+    filter_result:"Results", unit_people:"", lab_watching:"watching", pick_empty:"No casts are live right now. Please check back a little later.",
+    faq:[
+      {q:"Is Stripchat completely free to use?",a:"Yes — signup and browsing are completely free. Many live streams are free to watch. Private chats and some special shows need tokens, but you can try it free first and decide."},
+      {q:"Can I use it in English?",a:"The platform supports an English UI. Japanese casts speak Japanese, but many also understand some English, and the chat works in your language."},
+      {q:"Does it work on smartphones?",a:"It works smoothly from iOS and Android browsers. There's also a dedicated app for an even better viewing experience."},
+      {q:"Is my personal info safe?",a:"It's a major service used by tens of millions worldwide, managed under SSL encryption. You can use it under a nickname."}
+    ],
+    exp:[
+      {ic:"💬", t:"Send a chat message", d:"Message a cast while she's live. When she reacts back, the distance between you shrinks fast."},
+      {ic:"🎁", t:"Send a tip", d:"Send your support as tokens. Tip and she may call your name or react in a special way."},
+      {ic:"🔒", t:"Private show", d:"Special time for just the two of you — a one-on-one no other viewer can see."},
+      {ic:"✨", t:"Requests & menu", d:"Ask a cast for what you'd like to see. What's available is listed on each cast's menu."},
+      {ic:"🖼️", t:"Exclusive content", d:"Buy photos and videos a cast has published — a special side you can't see on stream."},
+      {ic:"⭐", t:"Fan club & ongoing support", d:"A way to support your favorite cast continuously. Perks are sometimes included."}
+    ]
+  }
+};
+let LANG = (function(){ try{ return localStorage.getItem("livenavi_lang")||"ja"; }catch(e){ return "ja"; } })();
+function t(key){ return (I18N[LANG] && I18N[LANG][key]!=null) ? I18N[LANG][key] : (I18N.ja[key]!=null?I18N.ja[key]:key); }
+function applyStaticLang(){
+  document.querySelectorAll("[data-i18n]").forEach(elm=>{
+    const k=elm.getAttribute("data-i18n"); const v=t(k); if(typeof v==="string") elm.textContent=v;
+  });
+  document.querySelectorAll("[data-i18n-html]").forEach(elm=>{
+    const k=elm.getAttribute("data-i18n-html"); const v=t(k); if(typeof v==="string") elm.innerHTML=v;
+  });
+  document.documentElement.lang = LANG;
+  const tg=document.getElementById("langToggle"); if(tg) tg.textContent = (LANG==="ja"?"EN":"日本語");
+}
+function setLang(l){
+  LANG=l; try{ localStorage.setItem("livenavi_lang", l); }catch(e){}
+  applyStaticLang();
+  // 動的コンテンツを再描画
+  if(typeof renderExp==="function") renderExp();
+  if(typeof renderFaq==="function") renderFaq();
+  if(typeof renderFilterButtons==="function") renderFilterButtons();
+  if(typeof loadLive==="function") loadLive();
+  if(typeof loadPicks==="function") loadPicks();
+  if(typeof runFilter==="function") runFilter();
+}
+
 /* ===== 漂う光の粒（ネオンのきらめき）===== */
 (function(){
   const box=document.getElementById("sparkles");
@@ -668,8 +821,8 @@ const GAS_URL = "";
 
 // 自動ピックアップする4枠（各枠が公式APIのどのパラメータで取得するか）
 const PICK_BLOCKS = [
-  {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"tag=girls/japanese&strict=1&mlBoost=1"},
-  {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls/japanese&strict=1&isNew=1", onlyNew:true, fetchLimit:200},
+  {key:"hot",    ic:"🔥", ttlKey:"pick_hot_ttl", subKey:"pick_hot_sub", params:"tag=girls/japanese&strict=1&mlBoost=1"},
+  {key:"newbie", ic:"🔰", ttlKey:"pick_new_ttl", subKey:"pick_new_sub", params:"tag=girls/japanese&strict=1&isNew=1", onlyNew:true, fetchLimit:200},
 ];
 const PICK_LIMIT = 60;       // 各枠の取得人数（女性のみに絞ると減るため多めに取得）
 const JP_FILTER = ""; // 日本語絞り込みは各枠のタグ girls/japanese が担うため共通フィルタは不要
@@ -739,22 +892,6 @@ const MOODS = [
   {emo:"🎀",lbl:"新人"},{emo:"🌙",lbl:"深夜配信"},
 ];
 
-const EXPERIENCES = [
-  {ic:"💬", t:"チャットで話しかける", d:"配信中のキャストにメッセージを送れます。リアクションが返ってくると、ぐっと距離が縮まります。"},
-  {ic:"🎁", t:"チップを贈る", d:"応援の気持ちをトークンで届けられます。贈ると名前を呼んでもらえたり、特別に反応してくれることも。"},
-  {ic:"🔒", t:"プライベートショー", d:"2人だけの特別な時間。ほかの視聴者には見られない、1対1のやり取りを楽しめます。"},
-  {ic:"✨", t:"リクエスト・メニュー", d:"見たい内容をキャストにお願いできます。何ができるかは各キャストのメニューに書かれています。"},
-  {ic:"🖼️", t:"限定コンテンツ", d:"キャストが公開している写真や動画を購入できます。配信では見られない特別な一面も。"},
-  {ic:"⭐", t:"ファンクラブ・継続応援", d:"お気に入りのキャストを継続して応援できる仕組み。特典が用意されていることもあります。"},
-];
-
-const FAQS = [
-  {q:"Stripchatは完全無料で使えますか？",a:"はい、登録・閲覧は完全無料です。多くのライブは無料で視聴できます。プライベートチャットや一部の特別ショーにコインが必要ですが、まず無料で体験してから判断できます。"},
-  {q:"日本語で利用できますか？",a:"サイト自体が日本語UIに対応しています。日本人キャストを選べば日本語チャットも可能です。"},
-  {q:"スマホでも使えますか？",a:"iOS・Androidのブラウザから快適に利用できます。専用アプリもあり、より見やすい視聴体験が可能です。"},
-  {q:"個人情報は安全ですか？",a:"世界で数千万人が利用する大手サービスで、SSL暗号化のもと管理されています。ニックネームでの利用も可能です。"},
-];
-
 /* =========================================================
    描画
    ========================================================= */
@@ -795,7 +932,7 @@ async function loadLive(){
   let models = await fetchModels("tag=girls/japanese&strict=1");
   ls.innerHTML="";
   if(!models || !models.length){
-    ls.appendChild(el("div","pick-empty","いま配信中の日本人キャストを読み込めませんでした。時間をおいて再度お試しください。"));
+    ls.appendChild(el("div","pick-empty",t("live_err")));
     return;
   }
   models = models.filter(passFilter);
@@ -811,7 +948,7 @@ async function loadLive(){
       </div>
       <div class="live-body">
         <div class="live-name">${c.name}</div>
-        <a class="live-link" href="${affLink(c.username)}" target="_blank" rel="noopener">▶ 今すぐ見る</a>
+        <a class="live-link" href="${affLink(c.username)}" target="_blank" rel="noopener">${t("btn_watch")}</a>
       </div>`;
     ls.appendChild(card);
   });
@@ -822,15 +959,15 @@ async function loadLive(){
 // ===== 理想のタイプで絞り込む（FIND YOUR TYPE） =====
 // 体型・状態を選ぶと、日本人キャスト(girls/japanese)を維持したまま絞り込む。単独でも組み合わせでもOK。
 const BODY_OPTS = [
-  {key:"bodyTypeThin",     lbl:"細身"},
-  {key:"bodyTypeAverage",  lbl:"標準"},
-  {key:"bodyTypeAthletic", lbl:"アスリート"},
-  {key:"bodyTypeCurvy",    lbl:"グラマー"},
-  {key:"bodyTypeLarge",    lbl:"ぽっちゃり"},
+  {key:"bodyTypeThin",     lblKey:"body_thin"},
+  {key:"bodyTypeAverage",  lblKey:"body_average"},
+  {key:"bodyTypeAthletic", lblKey:"body_athletic"},
+  {key:"bodyTypeCurvy",    lblKey:"body_curvy"},
+  {key:"bodyTypeLarge",    lblKey:"body_large"},
 ];
 const STATE_OPTS = [
-  {key:"isNew",   lbl:"🔰 新人"},
-  {key:"mlBoost", lbl:"🔥 今盛り上がってる"},
+  {key:"isNew",   lblKey:"state_new"},
+  {key:"mlBoost", lblKey:"state_boost"},
 ];
 const filterSel = { body:null, state:null };
 
@@ -845,14 +982,15 @@ function buildFilterParams(){
 
 function renderFilterButtons(){
   const fb=$("#filterBody"), fs=$("#filterState");
+  if(!fb||!fs) return;
   fb.innerHTML=""; fs.innerHTML="";
   BODY_OPTS.forEach(o=>{
-    const b=el("button","fbtn"+(filterSel.body===o.key?" on":""),o.lbl);
+    const b=el("button","fbtn"+(filterSel.body===o.key?" on":""),t(o.lblKey));
     b.onclick=()=>{ filterSel.body = (filterSel.body===o.key?null:o.key); renderFilterButtons(); runFilter(); };
     fb.appendChild(b);
   });
   STATE_OPTS.forEach(o=>{
-    const b=el("button","fbtn"+(filterSel.state===o.key?" on":""),o.lbl);
+    const b=el("button","fbtn"+(filterSel.state===o.key?" on":""),t(o.lblKey));
     b.onclick=()=>{ filterSel.state = (filterSel.state===o.key?null:o.key); renderFilterButtons(); runFilter(); };
     fs.appendChild(b);
   });
@@ -874,13 +1012,13 @@ async function runFilter(){
   root.innerHTML="";
   if(models) models = models.filter(passFilter);
   if(!models || !models.length){
-    root.appendChild(el("div","pick-empty","選んだ条件に合う、いま配信中の日本人キャストが見つかりませんでした。条件を変えてお試しください。"));
+    root.appendChild(el("div","pick-empty",t("filter_empty")));
     return;
   }
   models.sort((a,b)=>b.viewers-a.viewers);
   models = models.slice(0,30);
   const block=el("div","pick-block");
-  block.innerHTML=`<div class="pick-bar"><span class="pick-ic">🔍</span><span class="pick-ttl">絞り込み結果</span><span class="pick-sub">${models.length}人</span></div>`;
+  block.innerHTML=`<div class="pick-bar"><span class="pick-ic">🔍</span><span class="pick-ttl">${t("filter_result")}</span><span class="pick-sub">${models.length}${t("unit_people")}</span></div>`;
   const strip=el("div","pick-strip");
   models.forEach((c,i)=>{
     const card=el("div","pick-card"+(i>=8?" hidden":""));
@@ -890,7 +1028,7 @@ async function runFilter(){
   block.appendChild(strip);
   if(models.length>8){
     const mw=el("div","more-wrap");
-    const btn=el("button","more-btn",`▽ もっと見る（あと${models.length-8}人）`);
+    const btn=el("button","more-btn",t("btn_more").replace("{n}", models.length-8));
     btn.onclick=()=>{strip.querySelectorAll(".pick-card.hidden").forEach(x=>x.classList.remove("hidden"));mw.remove();};
     mw.appendChild(btn);block.appendChild(mw);
   }
@@ -912,7 +1050,7 @@ function renderRank(models){
     row.innerHTML=`
       <div class="rank-num">${i+1}</div>
       <div class="rank-info"><div class="nm">${c.name} ${c.online?'🟢':''}${c.isNew?' 🔰':''}</div><div class="mt">配信中</div></div>
-      <div class="rank-stat"><div class="v">${c.viewers.toLocaleString()}</div><div class="lab">視聴中</div></div>`;
+      <div class="rank-stat"><div class="v">${c.viewers.toLocaleString()}</div><div class="lab">${t("lab_watching")}</div></div>`;
     list.appendChild(row);
   });
 }
@@ -931,8 +1069,8 @@ function pickCardHtml(c, ic){
     </div>
     <div class="pick-body">
       <div class="pick-name">${c.name||c.username}</div>
-      <a class="pick-go" href="${affLink(c.username)}" target="_blank" rel="noopener">▶ 今すぐ見る</a>
-      <a class="pick-feed" href="${affLink(c.username,'/timeline')}" target="_blank" rel="noopener">📷 投稿を見る</a>
+      <a class="pick-go" href="${affLink(c.username)}" target="_blank" rel="noopener">${t("btn_watch")}</a>
+      <a class="pick-feed" href="${affLink(c.username,'/timeline')}" target="_blank" rel="noopener">${t("btn_feed")}</a>
     </div>`;
 }
 
@@ -941,12 +1079,12 @@ function renderPickBlock(b, models){
   const n = models?models.length:0;
   block.innerHTML=`<div class="pick-bar">
       <span class="pick-ic">${b.ic}</span>
-      <span class="pick-ttl">${b.ttl}</span>
-      <span class="pick-sub">${n?b.sub+'・'+n+'人':b.sub}</span>
+      <span class="pick-ttl">${t(b.ttlKey)}</span>
+      <span class="pick-sub">${n?t(b.subKey)+'・'+n+t("unit_people"):t(b.subKey)}</span>
     </div>`;
   const strip=el("div","pick-strip");
   if(!models || !models.length){
-    strip.appendChild(el("div","pick-empty","いま配信中のキャストがいません。時間をおいて再チェックしてください。"));
+    strip.appendChild(el("div","pick-empty",t("pick_empty")));
     block.appendChild(strip);
   }else{
     models.forEach((c,i)=>{
@@ -957,7 +1095,7 @@ function renderPickBlock(b, models){
     block.appendChild(strip);
     if(models.length>PICK_INIT){
       const mw=el("div","more-wrap");
-      const btn=el("button","more-btn",`▽ もっと見る（あと${models.length-PICK_INIT}人）`);
+      const btn=el("button","more-btn",t("btn_more").replace("{n}", models.length-PICK_INIT));
       btn.onclick=()=>{strip.querySelectorAll(".pick-card.hidden").forEach(x=>x.classList.remove("hidden"));mw.remove();};
       mw.appendChild(btn);block.appendChild(mw);
     }
@@ -967,7 +1105,7 @@ function renderPickBlock(b, models){
 
 function pickSkeleton(b){
   const block=el("div","pick-block");
-  block.innerHTML=`<div class="pick-bar"><span class="pick-ic">${b.ic}</span><span class="pick-ttl">${b.ttl}</span><span class="pick-sub">読み込み中...</span></div>`;
+  block.innerHTML=`<div class="pick-bar"><span class="pick-ic">${b.ic}</span><span class="pick-ttl">${t(b.ttlKey)}</span><span class="pick-sub">${LANG==="ja"?"読み込み中...":"Loading..."}</span></div>`;
   const strip=el("div","pick-strip");
   for(let i=0;i<4;i++){strip.appendChild(el("div","pick-card",`<div class="pick-thumb shimmer"></div><div class="pick-body"><div class="pick-name">　</div><div class="pick-go" style="opacity:.3">　</div></div>`));}
   block.appendChild(strip);
@@ -1007,19 +1145,34 @@ loadLive();
 loadPicks();
 
 // experiences grid
-const eg=$("#expGrid");
-EXPERIENCES.forEach(x=>{
-  eg.appendChild(el("div","exp-card",`<div class="exp-ic">${x.ic}</div><h4>${x.t}</h4><p>${x.d}</p>`));
-});
+function renderExp(){
+  const eg=$("#expGrid"); if(!eg) return; eg.innerHTML="";
+  (t("exp")||[]).forEach(x=>{
+    eg.appendChild(el("div","exp-card",`<div class="exp-ic">${x.ic}</div><h4>${x.t}</h4><p>${x.d}</p>`));
+  });
+}
 
 // faq
-const fq=$("#faq");
-FAQS.forEach(f=>{
-  const item=el("div","faq-item");
-  item.innerHTML=`<div class="faq-q">${f.q}<span class="pm">+</span></div><div class="faq-a">${f.a}</div>`;
-  item.querySelector(".faq-q").onclick=()=>item.classList.toggle("open");
-  fq.appendChild(item);
-});
+function renderFaq(){
+  const fq=$("#faq"); if(!fq) return; fq.innerHTML="";
+  (t("faq")||[]).forEach(f=>{
+    const item=el("div","faq-item");
+    item.innerHTML=`<div class="faq-q">${f.q}<span class="pm">+</span></div><div class="faq-a">${f.a}</div>`;
+    item.querySelector(".faq-q").onclick=()=>item.classList.toggle("open");
+    fq.appendChild(item);
+  });
+}
+renderExp();
+renderFaq();
+
+// 言語切り替えボタン
+(function(){
+  const tg=document.getElementById("langToggle");
+  if(tg) tg.onclick=()=>setLang(LANG==="ja"?"en":"ja");
+})();
+// 初期言語を適用（保存済みがenなら英語表示で起動）
+applyStaticLang();
+if(LANG!=="ja") setLang(LANG);
 
 // affiliate links on data-aff
 document.querySelectorAll("[data-aff]").forEach(a=>{a.href=affLink();a.target="_blank";a.rel="noopener";});
