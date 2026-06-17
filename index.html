@@ -792,22 +792,27 @@ function setLang(l){
 })();
 
 (function(){
-  const gate=document.getElementById("ageGate");
-  const deny=document.getElementById("ageDeny");
-  // 本番では一度通過したら記憶（24時間）。sessionが使えない環境では毎回表示。
-  let passed=false;
-  try{ passed = sessionStorage.getItem("yan_age_ok")==="1"; }catch(e){}
-  if(passed){ gate.classList.add("hide"); document.body.style.overflow=""; }
-  else { document.body.style.overflow="hidden"; }
-  document.getElementById("ageYes").onclick=function(){
-    try{ sessionStorage.setItem("yan_age_ok","1"); }catch(e){}
-    gate.classList.add("hide"); document.body.style.overflow="";
-  };
-  document.getElementById("ageNo").onclick=function(){
-    deny.classList.add("show");
-    // 退出先（健全なサイト）へ誘導
-    setTimeout(function(){ location.href="https://www.google.com"; },1500);
-  };
+  function initAgeGate(){
+    const gate=document.getElementById("ageGate");
+    const deny=document.getElementById("ageDeny");
+    const yes=document.getElementById("ageYes");
+    const no=document.getElementById("ageNo");
+    if(!gate||!yes||!no) return;
+    let passed=false;
+    try{ passed = sessionStorage.getItem("yan_age_ok")==="1"; }catch(e){}
+    if(passed){ gate.classList.add("hide"); document.body.style.overflow=""; }
+    else { document.body.style.overflow="hidden"; }
+    yes.addEventListener("click", function(){
+      try{ sessionStorage.setItem("yan_age_ok","1"); }catch(e){}
+      gate.classList.add("hide"); document.body.style.overflow="";
+    });
+    no.addEventListener("click", function(){
+      if(deny) deny.classList.add("show");
+      setTimeout(function(){ location.href="https://www.google.com"; },1500);
+    });
+  }
+  if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded", initAgeGate); }
+  else { initAgeGate(); }
 })();
 
 /* =========================================================
@@ -1167,12 +1172,14 @@ renderFaq();
 
 // 言語切り替えボタン
 (function(){
-  const tg=document.getElementById("langToggle");
-  if(tg) tg.onclick=()=>setLang(LANG==="ja"?"en":"ja");
+  try{
+    const tg=document.getElementById("langToggle");
+    if(tg) tg.onclick=()=>setLang(LANG==="ja"?"en":"ja");
+    // 初期言語を適用（保存済みがenなら英語表示で起動）
+    applyStaticLang();
+    if(LANG!=="ja") setLang(LANG);
+  }catch(e){ console.error("lang init error", e); }
 })();
-// 初期言語を適用（保存済みがenなら英語表示で起動）
-applyStaticLang();
-if(LANG!=="ja") setLang(LANG);
 
 // affiliate links on data-aff
 document.querySelectorAll("[data-aff]").forEach(a=>{a.href=affLink();a.target="_blank";a.rel="noopener";});
