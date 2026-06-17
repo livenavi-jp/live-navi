@@ -835,8 +835,8 @@ const STATE_OPTS = [
 const filterSel = { body:null, state:null };
 
 function buildFilterParams(){
-  // 日本人タグは常に維持
-  let params = "tag=girls/japanese";
+  // 日本人タグは常に維持。strict=1 で「優先表示」ではなく「厳格な絞り込み」にする
+  let params = "tag=girls/japanese&strict=1";
   if(filterSel.state === "isNew")   params += "&isNew=1";
   if(filterSel.state === "mlBoost") params += "&mlBoost=1";
   if(filterSel.body) params += "&profileBodyType=" + filterSel.body;
