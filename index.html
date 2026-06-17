@@ -184,6 +184,19 @@ nav{
 .mood .emo{font-size:30px;display:block;margin-bottom:8px}
 .mood .lbl{font-size:13px;font-weight:600}
 
+/* ===== filter panel (理想のタイプで絞り込む) ===== */
+.filter-panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px;margin-bottom:22px}
+.filter-row{display:flex;align-items:flex-start;gap:14px;padding:10px 0}
+.filter-row + .filter-row{border-top:1px solid var(--line)}
+.filter-label{flex:0 0 52px;font-size:13px;font-weight:700;color:var(--ink-dim);padding-top:7px}
+.filter-btns{display:flex;flex-wrap:wrap;gap:9px;flex:1}
+.fbtn{background:var(--bg2);border:1px solid var(--line);color:var(--ink);font-size:13px;font-weight:600;padding:8px 16px;border-radius:99px;cursor:pointer;transition:.18s}
+.fbtn:hover{border-color:var(--pink)}
+.fbtn.on{background:var(--pink);border-color:var(--pink);color:#fff;box-shadow:0 0 14px var(--glow-pink)}
+.filter-actions{display:flex;justify-content:flex-end;padding-top:8px}
+.filter-clear{background:transparent;border:none;color:var(--ink-dim);font-size:12px;cursor:pointer;text-decoration:underline}
+.filter-clear:hover{color:var(--ink)}
+
 /* ===== ranking ===== */
 .tabs{display:flex;gap:8px;margin-bottom:20px}
 .tab{
@@ -420,11 +433,24 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
 <section class="sec" id="mood">
   <div class="wrap">
     <div class="sec-head reveal">
-      <div class="sec-tag">Interactive Filter</div>
-      <h2>今夜の気分は、<em>どれ？</em></h2>
-      <p>選ぶとぴったりの日本人キャストが見つかります。</p>
+      <div class="sec-tag">Find Your Type</div>
+      <h2>理想のタイプで<em>絞り込む</em></h2>
+      <p>体型や状態を選ぶと、今すぐ会える日本人キャストが見つかります。複数選んでもOK。</p>
     </div>
-    <div class="mood-grid reveal" id="moodGrid"></div>
+    <div class="filter-panel reveal">
+      <div class="filter-row">
+        <span class="filter-label">体型</span>
+        <div class="filter-btns" id="filterBody"></div>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">状態</span>
+        <div class="filter-btns" id="filterState"></div>
+      </div>
+      <div class="filter-actions">
+        <button class="filter-clear" id="filterClear">条件をクリア</button>
+      </div>
+    </div>
+    <div class="reveal" id="filterResult"></div>
   </div>
 </section>
 
@@ -644,9 +670,6 @@ const GAS_URL = "";
 const PICK_BLOCKS = [
   {key:"hot",    ic:"🔥", ttl:"今盛り上がってる", sub:"ライブ配信中", params:"tag=girls/japanese&strict=1&mlBoost=1"},
   {key:"newbie", ic:"🔰", ttl:"今夜のおすすめ新人", sub:"デビューしたて", params:"tag=girls/japanese&strict=1&isNew=1", onlyNew:true, fetchLimit:200},
-  {key:"squirt", ic:"💦", ttl:"潮吹き", sub:"配信中・人気順", params:"tag=girls/japanese/squirt&strict=1"},
-  {key:"bigtits",ic:"🍒", ttl:"巨乳", sub:"配信中・人気順", params:"tag=girls/japanese/big-tits&strict=1"},
-  {key:"cosplay",ic:"🎀", ttl:"コスプレ", sub:"配信中・人気順", params:"tag=girls/japanese/cosplay&strict=1"},
 ];
 const PICK_LIMIT = 60;       // 各枠の取得人数（女性のみに絞ると減るため多めに取得）
 const JP_FILTER = ""; // 日本語絞り込みは各枠のタグ girls/japanese が担うため共通フィルタは不要
@@ -796,14 +819,87 @@ async function loadLive(){
   renderRank(models);
 }
 
-// mood（タグ別フィルター：押すと該当タグへ誘導）
-const MOOD_TAGS={"可愛い系":"cute","美人系":"","ギャル系":"","カップル":"couples","企画系":"","ハード系":"","新人":"","深夜配信":""};
-const mg=$("#moodGrid");
-MOODS.forEach(m=>{
-  const d=el("div","mood",`<span class="emo">${m.emo}</span><span class="lbl">${m.lbl}</span>`);
-  d.onclick=()=>window.open(affLink(),"_blank");
-  mg.appendChild(d);
-});
+// ===== 理想のタイプで絞り込む（FIND YOUR TYPE） =====
+// 体型・状態を選ぶと、日本人キャスト(girls/japanese)を維持したまま絞り込む。単独でも組み合わせでもOK。
+const BODY_OPTS = [
+  {key:"bodyTypeThin",     lbl:"細身"},
+  {key:"bodyTypeAverage",  lbl:"標準"},
+  {key:"bodyTypeAthletic", lbl:"アスリート"},
+  {key:"bodyTypeCurvy",    lbl:"グラマー"},
+  {key:"bodyTypeLarge",    lbl:"ぽっちゃり"},
+];
+const STATE_OPTS = [
+  {key:"isNew",   lbl:"🔰 新人"},
+  {key:"mlBoost", lbl:"🔥 今盛り上がってる"},
+];
+const filterSel = { body:null, state:null };
+
+function buildFilterParams(){
+  // 日本人タグは常に維持
+  let params = "tag=girls/japanese";
+  if(filterSel.state === "isNew")   params += "&isNew=1";
+  if(filterSel.state === "mlBoost") params += "&mlBoost=1";
+  if(filterSel.body) params += "&profileBodyType=" + filterSel.body;
+  return params;
+}
+
+function renderFilterButtons(){
+  const fb=$("#filterBody"), fs=$("#filterState");
+  fb.innerHTML=""; fs.innerHTML="";
+  BODY_OPTS.forEach(o=>{
+    const b=el("button","fbtn"+(filterSel.body===o.key?" on":""),o.lbl);
+    b.onclick=()=>{ filterSel.body = (filterSel.body===o.key?null:o.key); renderFilterButtons(); runFilter(); };
+    fb.appendChild(b);
+  });
+  STATE_OPTS.forEach(o=>{
+    const b=el("button","fbtn"+(filterSel.state===o.key?" on":""),o.lbl);
+    b.onclick=()=>{ filterSel.state = (filterSel.state===o.key?null:o.key); renderFilterButtons(); runFilter(); };
+    fs.appendChild(b);
+  });
+}
+
+let filterToken = 0;
+async function runFilter(){
+  const root=$("#filterResult");
+  const myToken = ++filterToken;
+  // 何も選ばれていなければ結果エリアを空に
+  if(!filterSel.body && !filterSel.state){ root.innerHTML=""; return; }
+  // ローディング
+  root.innerHTML="";
+  const grid=el("div","pick-strip");
+  for(let i=0;i<6;i++){grid.appendChild(el("div","pick-card",`<div class="pick-thumb shimmer"></div><div class="pick-body"><div class="pick-name">　</div><div class="pick-go" style="opacity:.3">　</div></div>`));}
+  root.appendChild(grid);
+  let models = await fetchModels(buildFilterParams(), 60);
+  if(myToken !== filterToken) return; // 新しい操作が入っていたら破棄
+  root.innerHTML="";
+  if(models) models = models.filter(passFilter);
+  if(!models || !models.length){
+    root.appendChild(el("div","pick-empty","選んだ条件に合う、いま配信中の日本人キャストが見つかりませんでした。条件を変えてお試しください。"));
+    return;
+  }
+  models.sort((a,b)=>b.viewers-a.viewers);
+  models = models.slice(0,30);
+  const block=el("div","pick-block");
+  block.innerHTML=`<div class="pick-bar"><span class="pick-ic">🔍</span><span class="pick-ttl">絞り込み結果</span><span class="pick-sub">${models.length}人</span></div>`;
+  const strip=el("div","pick-strip");
+  models.forEach((c,i)=>{
+    const card=el("div","pick-card"+(i>=8?" hidden":""));
+    card.innerHTML=pickCardHtml(c,"🌸");
+    strip.appendChild(card);
+  });
+  block.appendChild(strip);
+  if(models.length>8){
+    const mw=el("div","more-wrap");
+    const btn=el("button","more-btn",`▽ もっと見る（あと${models.length-8}人）`);
+    btn.onclick=()=>{strip.querySelectorAll(".pick-card.hidden").forEach(x=>x.classList.remove("hidden"));mw.remove();};
+    mw.appendChild(btn);block.appendChild(mw);
+  }
+  root.appendChild(block);
+}
+
+$("#filterClear").onclick=()=>{ filterSel.body=null; filterSel.state=null; renderFilterButtons(); $("#filterResult").innerHTML=""; };
+renderFilterButtons();
+
 
 // ===== ランキング（配信中の日本人を視聴者数順に） =====
 function renderRank(models){
