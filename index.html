@@ -380,6 +380,19 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
 .pick-go:hover{background:#ff5c95}
 .pick-empty{font-size:13px;color:var(--ink-faint);padding:18px 2px}
 
+/* ===== goal hero section ===== */
+.goal-sec{position:relative}
+.goal-block{margin-bottom:10px}
+.goal-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.goal-ic{font-size:22px;filter:drop-shadow(0 0 8px rgba(255,200,90,.6))}
+.goal-bar-ttl{font-family:var(--serif);font-size:20px;font-weight:800;background:linear-gradient(90deg,#ffd86e,#ff8fb0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.goal-bar-sub{font-size:12px;color:var(--ink-faint);margin-left:auto;white-space:nowrap}
+.goal-card{border-color:rgba(255,200,90,.35)}
+.goal-card:hover{border-color:rgba(255,200,90,.7);box-shadow:0 0 22px rgba(255,180,80,.3)}
+.goal-tag{position:absolute;top:8px;left:8px;background:linear-gradient(90deg,#ff8a3d,#ffd86e);color:#3a1d00;font-size:10px;font-weight:800;letter-spacing:.04em;padding:3px 9px;border-radius:99px;box-shadow:0 2px 8px rgba(255,140,60,.5)}
+.goal-go{background:linear-gradient(90deg,#ff8a3d,#ff5c95)!important}
+.goal-go:hover{filter:brightness(1.08)}
+
 .reveal{opacity:0;transform:translateY(24px);transition:.7s cubic-bezier(.2,.7,.2,1)}
 .reveal.in{opacity:1;transform:none}
 </style>
@@ -524,6 +537,18 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
       <p data-i18n="picks_p">いま配信中の日本人キャストを、盛り上がり・新人・タグ別に自動ピックアップ。リアルタイムで顔ぶれが変わります。各キャストの投稿（フィード）にも飛べます。</p>
     </div>
     <div class="reveal" id="picks"></div>
+  </div>
+</section>
+
+<!-- GOAL HERO -->
+<section class="sec goal-sec" id="goal">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Be Her Hero</div>
+      <h2 data-i18n-html="goal_h2">彼女の<em>ヒーロー</em>になろう</h2>
+      <p data-i18n="goal_p">いま目標（ゴール）に向かって応援を募っている日本人キャストたち。あなたのトークンが、彼女の目標達成を後押しします。</p>
+    </div>
+    <div class="reveal" id="goalList"></div>
   </div>
 </section>
 
@@ -693,6 +718,8 @@ const I18N = {
     filter_body:"体型", filter_state:"状態", filter_clear:"条件をクリア",
     rank_h2:"いま人気の<em>ランキング</em>", rank_p:"配信中の日本人キャストを、視聴者数のリアルタイム順で表示しています。",
     picks_h2:"今夜の<em>注目キャスト</em>", picks_p:"いま配信中の日本人キャストを、盛り上がり・新人・タグ別に自動ピックアップ。リアルタイムで顔ぶれが変わります。各キャストの投稿（フィード）にも飛べます。",
+    goal_h2:"彼女の<em>ヒーロー</em>になろう", goal_p:"いま目標（ゴール）に向かって応援を募っている日本人キャストたち。あなたのトークンが、彼女の目標達成を後押しします。",
+    goal_bar:"🎯 目標に挑戦中", goal_empty:"いま目標を設定して配信中の日本人キャストが見つかりませんでした。時間をおいて再チェックしてください。", goal_cheer:"応援する",
     coin_h2:"トークン（コイン）の<em>仕組み</em>", coin_p:"Stripchatは「使った分だけ」の前払い式。月額や登録料はかからず、必要なときにトークンを買って使います。",
     coin_p1:"<b>トークン＝サイト内通貨</b><br>チップ、プライベートショー、限定コンテンツなどに使います。まとめて買うほど1枚あたりが割安になる仕組みです。",
     coin_p2:"<b>時期によってお得なキャンペーン</b><br>新規登録者向けのボーナスや割引などが随時行われています。内容は時期によって変わります。",
@@ -761,6 +788,8 @@ const I18N = {
     filter_body:"Body", filter_state:"Status", filter_clear:"Clear filters",
     rank_h2:"Trending <em>Ranking</em>", rank_p:"Japanese cam girls who are live now, ranked by real-time viewer count.",
     picks_h2:"Tonight's <em>Featured Cast</em>", picks_p:"Japanese cam girls live right now, auto-curated by buzz and newcomers. The lineup changes in real time. You can also jump to each cast's feed.",
+    goal_h2:"Be Her <em>Hero</em>", goal_p:"Japanese cam girls rallying support toward a goal right now. Your tokens help push her over the line.",
+    goal_bar:"🎯 Chasing a goal", goal_empty:"No Japanese cam girls with an active goal are live right now. Please check back a little later.", goal_cheer:"Cheer her on",
     coin_h2:"How <em>Tokens</em> Work", coin_p:"Stripchat is prepaid — you pay only for what you use. No monthly fee, no signup fee. Just buy tokens when you need them.",
     coin_p1:"<b>Tokens = on-site currency</b><br>Used for tips, private shows, exclusive content and more. The more you buy at once, the cheaper each token gets.",
     coin_p2:"<b>Seasonal promotions</b><br>Bonuses and discounts for new members run from time to time. Offers change by season.",
@@ -825,6 +854,7 @@ function setLang(l){
   if(typeof renderFilterButtons==="function") renderFilterButtons();
   if(typeof loadLive==="function") loadLive();
   if(typeof loadPicks==="function") loadPicks();
+  if(typeof loadGoals==="function") loadGoals();
   if(typeof runFilter==="function") runFilter();
   if(typeof updateLottoClock==="function") updateLottoClock();
 }
@@ -1204,9 +1234,66 @@ async function loadPicks(){
   }
 }
 
+// ===== ゴール応援セクション（目標設定中の日本人キャストを集める）=====
+async function loadGoals(){
+  const root=document.getElementById("goalList");
+  if(!root) return;
+  // スケルトン
+  root.innerHTML="";
+  const sk=el("div","goal-block");
+  sk.innerHTML=`<div class="goal-bar"><span class="goal-ic">🎯</span><span class="goal-bar-ttl">${LANG==="ja"?"読み込み中...":"Loading..."}</span></div>`;
+  const skStrip=el("div","pick-strip");
+  for(let i=0;i<4;i++){skStrip.appendChild(el("div","pick-card",`<div class="pick-thumb shimmer"></div><div class="pick-body"><div class="pick-name">　</div><div class="pick-go" style="opacity:.3">　</div></div>`));}
+  sk.appendChild(skStrip); root.appendChild(sk);
+
+  let models = await fetchModels("tag=girls/japanese&goalEnabled=1&strict=1", 60);
+  root.innerHTML="";
+  if(models) models = models.filter(passFilter);
+  if(!models || !models.length){
+    root.appendChild(el("div","pick-empty",t("goal_empty")));
+    return;
+  }
+  // 盛り上がり（視聴者数）順に並べる
+  models.sort((a,b)=>b.viewers-a.viewers);
+  models = models.slice(0,30);
+
+  const block=el("div","goal-block");
+  block.innerHTML=`<div class="goal-bar"><span class="goal-ic">🎯</span><span class="goal-bar-ttl">${t("goal_bar")}</span><span class="goal-bar-sub">${models.length}${t("unit_people")}</span></div>`;
+  const strip=el("div","pick-strip");
+  models.forEach((c,i)=>{
+    const card=el("div","pick-card goal-card"+(i>=PICK_INIT?" hidden":""));
+    card.innerHTML=goalCardHtml(c);
+    strip.appendChild(card);
+  });
+  block.appendChild(strip);
+  if(models.length>PICK_INIT){
+    const mw=el("div","more-wrap");
+    const btn=el("button","more-btn",t("btn_more").replace("{n}", models.length-PICK_INIT));
+    btn.onclick=()=>{strip.querySelectorAll(".pick-card.hidden").forEach(x=>x.classList.remove("hidden"));mw.remove();};
+    mw.appendChild(btn);block.appendChild(mw);
+  }
+  root.appendChild(block);
+}
+
+function goalCardHtml(c){
+  const thumbStyle=c.thumb?`style="background-image:url('${c.thumb}')"`:"";
+  return `
+    <div class="pick-thumb" ${thumbStyle}>
+      ${c.thumb?"":'<span class="ph">🎯</span>'}
+      <span class="goal-tag">🎯 GOAL</span>
+      ${c.online?`<span class="vbadge"><span class="dot"></span>${(c.viewers||0).toLocaleString()}</span>`:''}
+    </div>
+    <div class="pick-body">
+      <div class="pick-name">${c.name||c.username}</div>
+      <a class="pick-go goal-go" href="${affLink(c.username)}" target="_blank" rel="noopener">⭐ ${t("goal_cheer")}</a>
+      <a class="pick-feed" href="${affLink(c.username,'/timeline')}" target="_blank" rel="noopener">${t("btn_feed")}</a>
+    </div>`;
+}
+
 // 起動
 loadLive();
 loadPicks();
+loadGoals();
 
 // experiences grid
 function renderExp(){
