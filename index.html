@@ -2,6 +2,23 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<script>
+/* 初期テーマのちらつき防止：言語を即判定して html にクラスを付与 */
+(function(){
+  try{
+    var saved=null; try{ saved=localStorage.getItem("livenavi_lang"); }catch(e){}
+    var lang;
+    if(saved==="ja"||saved==="en"){ lang=saved; }
+    else{
+      var ls=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||navigator.userLanguage||""];
+      var isJa=ls.some(function(l){return l&&l.toLowerCase().indexOf("ja")===0;});
+      lang=isJa?"ja":"en";
+    }
+    document.documentElement.classList.add(lang==="ja"?"lang-ja":"lang-en");
+    document.documentElement.lang=lang;
+  }catch(e){ document.documentElement.classList.add("lang-ja"); }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ライブナビ | 今夜会える日本人キャストを安心ガイド</title>
 <meta name="description" content="Stripchatで活躍する日本人キャストをリアルタイム表示。週間ランキング・新人情報・料金ガイドで今夜の一人がすぐ見つかる。">
@@ -29,7 +46,45 @@
   --glow-live:0 0 6px rgba(46,230,166,.8),0 0 16px rgba(46,230,166,.5);
   --serif:"Shippori Mincho",serif;
   --sans:"Zen Kaku Gothic New",sans-serif;
+  /* ページ背景（英語版＝現状のネオン系。日本語版で上書き） */
+  --page-grad1:rgba(157,107,255,.32);
+  --page-grad2:rgba(255,61,127,.28);
+  --page-grad3:rgba(46,230,166,.12);
+  --page-base:linear-gradient(180deg,#0a0610,#120a1c 40%,#0a0610);
+  --sparkle-base:#fff;
 }
+
+/* ===== 日本語版テーマ：明るくピュアな色味 ===== */
+html.lang-ja{
+  --bg:#fff5f9;
+  --bg2:#ffeef5;
+  --card:#ffffff;
+  --card2:#fdeef4;
+  --line:rgba(120,70,100,.14);
+  --ink:#3a2230;
+  --ink-dim:#7a5d6c;
+  --ink-faint:#ad93a1;
+  --pink:#ff6fa5;
+  --pink2:#ff95bd;
+  --gold:#ffb84d;
+  --violet:#b58cff;
+  --live:#22c79a;
+  --glow-pink:0 0 8px rgba(255,111,165,.4),0 0 20px rgba(255,111,165,.22);
+  --glow-violet:0 0 8px rgba(181,140,255,.4),0 0 20px rgba(181,140,255,.22);
+  --glow-gold:0 0 8px rgba(255,184,77,.4),0 0 18px rgba(255,184,77,.25);
+  --glow-live:0 0 6px rgba(34,199,154,.5),0 0 14px rgba(34,199,154,.3);
+  /* 明るいパステルの背景グラデーション */
+  --page-grad1:rgba(181,140,255,.18);
+  --page-grad2:rgba(255,111,165,.20);
+  --page-grad3:rgba(255,200,150,.14);
+  --page-base:linear-gradient(180deg,#fff5f9,#ffeef6 40%,#fff5f9);
+  --sparkle-base:#ff95bd;
+  --nav-bg:rgba(255,245,249,.82);
+}
+/* 日本語テーマの個別微調整 */
+html.lang-ja .logo{text-shadow:none}
+html.lang-ja .live-thumb,html.lang-ja .pick-thumb{background:linear-gradient(135deg,#ffe0ee,#f3e3ff)}
+html.lang-ja .shimmer{background:linear-gradient(100deg,#f7e8f1 30%,#fdeef6 50%,#f7e8f1 70%);background-size:200% 100%;animation:sh 1.3s infinite}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
@@ -43,10 +98,10 @@ body{
 body::before{
   content:"";position:fixed;inset:0;z-index:-2;
   background:
-    radial-gradient(ellipse 80% 50% at 80% -10%,rgba(157,107,255,.32),transparent 60%),
-    radial-gradient(ellipse 70% 50% at 0% 10%,rgba(255,61,127,.28),transparent 55%),
-    radial-gradient(ellipse 60% 40% at 50% 110%,rgba(46,230,166,.12),transparent 60%),
-    linear-gradient(180deg,#0a0610,#120a1c 40%,#0a0610);
+    radial-gradient(ellipse 80% 50% at 80% -10%,var(--page-grad1),transparent 60%),
+    radial-gradient(ellipse 70% 50% at 0% 10%,var(--page-grad2),transparent 55%),
+    radial-gradient(ellipse 60% 40% at 50% 110%,var(--page-grad3),transparent 60%),
+    var(--page-base);
 }
 body::after{
   content:"";position:fixed;inset:0;z-index:-1;opacity:.05;pointer-events:none;
@@ -54,7 +109,7 @@ body::after{
 }
 /* 漂う光の粒（ネオンのきらめき） */
 .sparkles{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-.sparkles i{position:absolute;display:block;width:3px;height:3px;border-radius:50%;background:#fff;opacity:0;animation:floatUp linear infinite}
+.sparkles i{position:absolute;display:block;width:3px;height:3px;border-radius:50%;background:var(--sparkle-base);opacity:0;animation:floatUp linear infinite}
 .sparkles i:nth-child(odd){background:var(--pink2);box-shadow:var(--glow-pink)}
 .sparkles i:nth-child(3n){background:var(--violet);box-shadow:var(--glow-violet)}
 .sparkles i:nth-child(5n){background:var(--gold);box-shadow:var(--glow-gold)}
@@ -92,23 +147,23 @@ a{color:inherit;text-decoration:none}
   color:#fff;font-size:12px;font-weight:800;letter-spacing:.06em;padding:6px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(255,61,127,.4)}
 .lotto-h2{font-size:30px;font-weight:800;margin:16px 0 10px;line-height:1.3;position:relative}
 .lotto-h2 em{font-style:normal;background:linear-gradient(90deg,#ffd86e,#ff8fb0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.lotto-p{color:var(--ink-dim);font-size:15px;line-height:1.8;max-width:480px;margin:0 auto 22px;position:relative}
+.lotto-p{color:#cdb8de;font-size:15px;line-height:1.8;max-width:480px;margin:0 auto 22px;position:relative}
 .lotto-timer{position:relative;display:inline-flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:24px}
-.lotto-timer-lbl{font-size:12px;font-weight:700;color:var(--ink-dim);letter-spacing:.08em}
+.lotto-timer-lbl{font-size:12px;font-weight:700;color:#cdb8de;letter-spacing:.08em}
 .lotto-clock{font-family:var(--serif,Georgia),serif;font-size:48px;font-weight:800;letter-spacing:.04em;
   background:linear-gradient(180deg,#fff,#ffc8da);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
   text-shadow:0 0 28px rgba(255,61,127,.35);font-variant-numeric:tabular-nums;min-width:160px}
 .lotto-clock.live{background:linear-gradient(180deg,#ffe27a,#ffb347);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:lottoLive 1s ease-in-out infinite}
 @keyframes lottoLive{50%{opacity:.6}}
 .lotto-btn{position:relative;display:inline-block}
-.lotto-note{position:relative;font-size:11px;color:var(--ink-faint,#9a8aa8);margin-top:16px;line-height:1.6;max-width:460px;margin-left:auto;margin-right:auto}
+.lotto-note{position:relative;font-size:11px;color:#9a8aa8;margin-top:16px;line-height:1.6;max-width:460px;margin-left:auto;margin-right:auto}
 @media(max-width:600px){.lotto-h2{font-size:24px}.lotto-clock{font-size:40px}.lotto-card{padding:32px 20px 24px}}
 
 /* ===== nav ===== */
 nav{
   position:sticky;top:0;z-index:40;
   backdrop-filter:blur(14px);
-  background:rgba(10,6,16,.78);
+  background:var(--nav-bg,rgba(10,6,16,.78));
   border-bottom:1px solid var(--line);
 }
 .nav-in{display:flex;align-items:center;gap:18px;height:60px}
@@ -855,6 +910,8 @@ function applyStaticLang(){
     const k=elm.getAttribute("data-i18n-html"); const v=t(k); if(typeof v==="string") elm.innerHTML=v;
   });
   document.documentElement.lang = LANG;
+  document.documentElement.classList.toggle("lang-ja", LANG==="ja");
+  document.documentElement.classList.toggle("lang-en", LANG!=="ja");
   const tg=document.getElementById("langToggle"); if(tg) tg.textContent = (LANG==="ja"?"EN":"日本語");
 }
 function setLang(l, persist){
