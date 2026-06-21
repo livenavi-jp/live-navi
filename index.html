@@ -833,7 +833,19 @@ const I18N = {
     ]
   }
 };
-let LANG = (function(){ try{ return localStorage.getItem("livenavi_lang")||"ja"; }catch(e){ return "ja"; } })();
+let LANG = (function(){
+  // 1) ユーザーが手動で言語を選んだことがあれば、それを最優先で使う
+  try{
+    const saved = localStorage.getItem("livenavi_lang");
+    if(saved === "ja" || saved === "en") return saved;
+  }catch(e){}
+  // 2) 初回アクセス：ブラウザの優先言語で自動判定（日本語なら日本語、それ以外は英語）
+  try{
+    const langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || navigator.userLanguage || ""];
+    const isJa = langs.some(function(l){ return l && l.toLowerCase().indexOf("ja") === 0; });
+    return isJa ? "ja" : "en";
+  }catch(e){ return "ja"; }
+})();
 function t(key){ return (I18N[LANG] && I18N[LANG][key]!=null) ? I18N[LANG][key] : (I18N.ja[key]!=null?I18N.ja[key]:key); }
 function applyStaticLang(){
   document.querySelectorAll("[data-i18n]").forEach(elm=>{
@@ -845,8 +857,9 @@ function applyStaticLang(){
   document.documentElement.lang = LANG;
   const tg=document.getElementById("langToggle"); if(tg) tg.textContent = (LANG==="ja"?"EN":"日本語");
 }
-function setLang(l){
-  LANG=l; try{ localStorage.setItem("livenavi_lang", l); }catch(e){}
+function setLang(l, persist){
+  LANG=l;
+  if(persist !== false){ try{ localStorage.setItem("livenavi_lang", l); }catch(e){} }
   applyStaticLang();
   // 動的コンテンツを再描画
   if(typeof renderExp==="function") renderExp();
@@ -1320,10 +1333,11 @@ renderFaq();
 (function(){
   try{
     const tg=document.getElementById("langToggle");
-    if(tg) tg.onclick=()=>setLang(LANG==="ja"?"en":"ja");
-    // 初期言語を適用（保存済みがenなら英語表示で起動）
+    // 手動で切り替えたら、その選択を保存（次回以降そちらを優先）
+    if(tg) tg.onclick=()=>setLang(LANG==="ja"?"en":"ja", true);
+    // 初期表示を適用。英語スタート時は動的コンテンツも英語で描画（自動判定は保存しない）
     applyStaticLang();
-    if(LANG!=="ja") setLang(LANG);
+    if(LANG!=="ja") setLang(LANG, false);
   }catch(e){ console.error("lang init error", e); }
 })();
 
