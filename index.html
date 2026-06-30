@@ -135,9 +135,26 @@ a{color:inherit;text-decoration:none}
 /* ===== coin lottery ===== */
 .coin-lotto-sec{padding-top:46px;padding-bottom:10px}
 .lotto-card{position:relative;overflow:hidden;text-align:center;max-width:640px;margin:0 auto;
-  background:linear-gradient(160deg,rgba(40,18,55,.95),rgba(22,10,34,.95));
-  border:1px solid rgba(255,61,127,.4);border-radius:26px;padding:40px 30px 30px;
-  box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 40px rgba(255,61,127,.18),inset 0 1px 0 rgba(255,255,255,.06)}
+  background:linear-gradient(150deg,rgba(255,255,255,.14),rgba(255,255,255,.05) 42%,rgba(255,255,255,.10));
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.28);border-radius:26px;padding:40px 30px 30px;
+  box-shadow:0 20px 60px rgba(0,0,0,.28),0 0 40px rgba(255,61,127,.14),inset 0 1px 1px rgba(255,255,255,.45),inset 0 -1px 1px rgba(255,255,255,.08)}
+/* ガラスの反射ハイライト（斜めに走る光） */
+.lotto-card::before{content:"";position:absolute;top:0;left:-30%;width:55%;height:100%;
+  background:linear-gradient(105deg,transparent,rgba(255,255,255,.22),transparent);
+  transform:skewX(-18deg);pointer-events:none;animation:lottoSheen 7s ease-in-out infinite}
+@keyframes lottoSheen{0%,72%{left:-40%}88%,100%{left:120%}}
+/* 上端のガラス縁の光沢 */
+.lotto-card::after{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);pointer-events:none}
+/* 英語版（暗背景）ではガラスをやや濃いトーンに */
+html.lang-en .lotto-card{background:linear-gradient(150deg,rgba(120,80,150,.22),rgba(40,20,60,.18) 42%,rgba(120,80,150,.16))}
+html.lang-en .lotto-p,html.lang-en .lotto-timer-lbl{color:#e7d8f2}
+/* 日本語版（明背景）ではテキストを濃色にして可読性確保 */
+html.lang-ja .lotto-p{color:#6a4a5e}
+html.lang-ja .lotto-timer-lbl{color:#8a6a7c}
+html.lang-ja .lotto-note{color:#a98ba0}
+html.lang-ja .lotto-clock{background:linear-gradient(180deg,#ff6fa5,#c94f95);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 14px rgba(255,111,165,.3)}
 .lotto-glow{position:absolute;top:-60%;left:50%;transform:translateX(-50%);width:120%;height:160%;
   background:radial-gradient(ellipse at center,rgba(255,61,127,.22),transparent 60%);pointer-events:none;animation:lottoPulse 4s ease-in-out infinite}
 @keyframes lottoPulse{50%{opacity:.55}}
