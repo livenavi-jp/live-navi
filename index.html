@@ -501,7 +501,6 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
   <div class="wrap nav-in">
     <div class="logo">ライブ<span>ナビ</span></div>
     <div class="nav-links">
-      <a href="#live" data-i18n="nav_live">配信中</a>
       <a href="#ranking" data-i18n="nav_ranking">ランキング</a>
       <a href="#newfaces" data-i18n="nav_new">新人</a>
       <a href="#coin" data-i18n="nav_coin">料金ガイド</a>
@@ -531,18 +530,6 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
     </div>
   </div>
 </header>
-
-<!-- LIVE NOW -->
-<section class="sec" id="live">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-tag">Live Now</div>
-      <h2 data-i18n-html="live_h2">いま<em>配信中</em>のキャスト</h2>
-      <p data-i18n="live_p">オンライン状態はリアルタイムで自動更新。LIVEバッジの子は今すぐ会えます。</p>
-    </div>
-    <div class="live-strip reveal" id="liveStrip"></div>
-  </div>
-</section>
 
 <!-- AUTO PICKS BY TAG -->
 <section class="sec" id="newfaces">
@@ -1106,34 +1093,11 @@ const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=nu
 
 // ===== 配信中の日本人キャスト一覧（視聴者数順） =====
 async function loadLive(){
-  const ls=$("#liveStrip");
-  // ローディング骨組み
-  ls.innerHTML="";
-  for(let i=0;i<6;i++){ls.appendChild(el("div","live-card",`<div class="live-thumb shimmer"></div><div class="live-body"><div class="live-name">　</div><div class="live-link" style="opacity:.3">　</div></div>`));}
+  // 配信中の日本人キャストを取得し、ランキングに反映する（「いま配信中」セクションは廃止）
   let models = await fetchModels("tag=girls/japanese&strict=1");
-  ls.innerHTML="";
-  if(!models || !models.length){
-    ls.appendChild(el("div","pick-empty",t("live_err")));
-    return;
-  }
+  if(!models || !models.length){ return; }
   models = models.filter(passFilter);
   models.sort((a,b)=>b.viewers-a.viewers);
-  models.forEach(c=>{
-    const card=el("div","live-card");
-    const thumbStyle=c.thumb?`style="background-image:url('${c.thumb}')"`:"";
-    card.innerHTML=`
-      <div class="live-thumb" ${thumbStyle}>
-        ${c.thumb?"":'🌸'}
-        <span class="badge ${c.online?'on':'off'}"><span class="dot"></span>${c.online?'LIVE':'OFF'}</span>
-        ${c.online?`<span class="vbadge"><span class="dot"></span>${c.viewers.toLocaleString()}</span>`:''}
-      </div>
-      <div class="live-body">
-        <div class="live-name">${c.name}</div>
-        <a class="live-link" href="${affLink(c.username)}" target="_blank" rel="noopener">${t("btn_watch")}</a>
-      </div>`;
-    ls.appendChild(card);
-  });
-  // ランキングにも同じデータを流用
   renderRank(models);
 }
 
