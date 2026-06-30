@@ -20,8 +20,8 @@
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ライブナビ | 今夜会える日本人キャストを安心ガイド</title>
-<meta name="description" content="Stripchatで活躍する日本人キャストをリアルタイム表示。週間ランキング・新人情報・料金ガイドで今夜の一人がすぐ見つかる。">
+<title>ライブナビ | 今すぐ会える日本人キャストガイド</title>
+<meta name="description" content="Stripchatで活躍する日本人キャストをリアルタイム表示。人気ランキング・新人情報・料金ガイドで、あなたの推しがすぐ見つかる。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -515,7 +515,7 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
 <header class="hero">
   <div class="wrap">
     <span class="eyebrow" data-i18n="hero_eyebrow">JAPANESE CAST · CURATED GUIDE</span>
-    <h1 class="reveal" data-i18n-html="hero_h1">日本人の子と、<br><em>今夜</em>話そう。</h1>
+    <h1 class="reveal" data-i18n-html="hero_h1">今すぐ会える<em>推し</em>が、<br>あなたに応えてくれる。</h1>
     <p class="reveal" data-i18n-html="hero_p">Stripchatで活躍する日本人キャストを厳選紹介。<br>言葉が通じる安心感で、今すぐ無料で会いに行こう。</p>
     <div class="hero-btns reveal">
       <a class="btn-main" href="#" data-aff data-i18n="hero_btn_main">▶ 無料で今すぐ見る</a>
@@ -531,6 +531,30 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
     </div>
   </div>
 </header>
+
+<!-- LIVE NOW -->
+<section class="sec" id="live">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Live Now</div>
+      <h2 data-i18n-html="live_h2">いま<em>配信中</em>のキャスト</h2>
+      <p data-i18n="live_p">オンライン状態はリアルタイムで自動更新。LIVEバッジの子は今すぐ会えます。</p>
+    </div>
+    <div class="live-strip reveal" id="liveStrip"></div>
+  </div>
+</section>
+
+<!-- AUTO PICKS BY TAG -->
+<section class="sec" id="newfaces">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="sec-tag">Featured · Auto</div>
+      <h2 data-i18n-html="picks_h2"><em>注目</em>のキャスト</h2>
+      <p data-i18n="picks_p">いま配信中の日本人キャストを、盛り上がり・新人・タグ別に自動ピックアップ。リアルタイムで顔ぶれが変わります。各キャストの投稿（フィード）にも飛べます。</p>
+    </div>
+    <div class="reveal" id="picks"></div>
+  </div>
+</section>
 
 <!-- COIN LOTTERY -->
 <section class="sec coin-lotto-sec" id="lotto">
@@ -548,18 +572,6 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
       <a class="btn-main lotto-btn" href="#" data-aff data-i18n="lotto_cta">▶ 無料登録して抽選に参加</a>
       <div class="lotto-note" data-i18n="lotto_note">※本抽選はStripchat公式が実施しています。当選はランダムで、登録経路による有利・不利はありません。</div>
     </div>
-  </div>
-</section>
-
-<!-- LIVE NOW -->
-<section class="sec" id="live">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-tag">Live Now</div>
-      <h2 data-i18n-html="live_h2">いま<em>配信中</em>のキャスト</h2>
-      <p data-i18n="live_p">オンライン状態はリアルタイムで自動更新。LIVEバッジの子は今すぐ会えます。</p>
-    </div>
-    <div class="live-strip reveal" id="liveStrip"></div>
   </div>
 </section>
 
@@ -597,18 +609,6 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
       <p data-i18n="rank_p">配信中の日本人キャストを、視聴者数のリアルタイム順で表示しています。</p>
     </div>
     <div class="rank-list reveal" id="rankList"></div>
-  </div>
-</section>
-
-<!-- AUTO PICKS BY TAG -->
-<section class="sec" id="newfaces">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="sec-tag">Tonight's Picks · Auto</div>
-      <h2 data-i18n-html="picks_h2">今夜の<em>注目キャスト</em></h2>
-      <p data-i18n="picks_p">いま配信中の日本人キャストを、盛り上がり・新人・タグ別に自動ピックアップ。リアルタイムで顔ぶれが変わります。各キャストの投稿（フィード）にも飛べます。</p>
-    </div>
-    <div class="reveal" id="picks"></div>
   </div>
 </section>
 
@@ -737,7 +737,7 @@ footer{border-top:1px solid var(--line);margin-top:60px;padding:36px 0 60px;font
 <!-- FINAL CTA -->
 <div class="wrap">
   <div class="final reveal">
-    <h2 class="serif" data-i18n-html="final_h2">今夜、<span class="accent">出会う。</span></h2>
+    <h2 class="serif" data-i18n-html="final_h2">さあ、<span class="accent">会いに行こう。</span></h2>
     <p data-i18n="final_p">人気キャストが今この瞬間もライブ配信中。登録30秒・完全無料でその扉を開けてみてください。</p>
     <a class="btn-main" href="#" data-aff data-i18n="final_cta">▶ Stripchatを無料で始める</a>
     <div class="hero-note">18歳以上限定 · 登録無料 · クレジットカード不要</div>
@@ -789,7 +789,7 @@ const I18N = {
     mood_h2:"理想のタイプで<em>絞り込む</em>", mood_p:"体型や状態を選ぶと、今すぐ会える日本人キャストが見つかります。複数選んでもOK。",
     filter_body:"体型", filter_state:"状態", filter_clear:"条件をクリア",
     rank_h2:"いま人気の<em>ランキング</em>", rank_p:"配信中の日本人キャストを、視聴者数のリアルタイム順で表示しています。",
-    picks_h2:"今夜の<em>注目キャスト</em>", picks_p:"いま配信中の日本人キャストを、盛り上がり・新人・タグ別に自動ピックアップ。リアルタイムで顔ぶれが変わります。各キャストの投稿（フィード）にも飛べます。",
+    picks_h2:"<em>注目</em>のキャスト", picks_p:"いま配信中の日本人キャストを、盛り上がり・新人・タグ別に自動ピックアップ。リアルタイムで顔ぶれが変わります。各キャストの投稿（フィード）にも飛べます。",
     goal_h2:"彼女の<em>ヒーロー</em>になろう", goal_p:"いま目標（ゴール）に向かって応援を募っている日本人キャストたち。あなたのトークンが、彼女の目標達成を後押しします。",
     goal_bar:"🎯 目標に挑戦中", goal_empty:"いま目標を設定して配信中の日本人キャストが見つかりませんでした。時間をおいて再チェックしてください。", goal_cheer:"応援する",
     coin_h2:"トークン（コイン）の<em>仕組み</em>", coin_p:"Stripchatは「使った分だけ」の前払い式。月額や登録料はかからず、必要なときにトークンを買って使います。",
@@ -808,12 +808,12 @@ const I18N = {
     step2_t:"モデルを探す", step2_d:"気分・タイプで絞り込み。日本人キャストをすぐ見つけられます。",
     step3_t:"無料で楽しむ", step3_d:"多くの配信は無料視聴OK。気に入ったらコインでもっと近づけます。",
     faq_h2:"よくある<em>質問</em>",
-    final_h2:"今夜、<span class=\"accent\">出会う。</span>", final_p:"人気キャストが今この瞬間もライブ配信中。登録30秒・完全無料でその扉を開けてみてください。", final_cta:"▶ Stripchatを無料で始める",
+    final_h2:"さあ、<span class=\"accent\">会いに行こう。</span>", final_p:"人気キャストが今この瞬間もライブ配信中。登録30秒・完全無料で、その扉を開けてみてください。", final_cta:"▶ Stripchatを無料で始める",
     foot_ranking:"ランキング", foot_new:"新人一覧", foot_howto:"使い方ガイド", foot_coin:"料金ガイド", foot_about:"このサイトについて", foot_disc:"免責事項",
     foot_note:"当サイトはStripchatアフィリエイトプログラム参加サイトです。<br>本サービスは18歳以上を対象としています。未成年者のアクセスはご遠慮ください。",
     // JS-generated
     pick_hot_ttl:"今盛り上がってる", pick_hot_sub:"ライブ配信中",
-    pick_new_ttl:"今夜のおすすめ新人", pick_new_sub:"デビューしたて",
+    pick_new_ttl:"おすすめ新人", pick_new_sub:"デビューしたて",
     body_thin:"細身", body_average:"標準", body_athletic:"アスリート", body_curvy:"グラマー", body_large:"ぽっちゃり",
     state_new:"🔰 新人", state_boost:"🔥 今盛り上がってる",
     btn_watch:"▶ 今すぐ見る", btn_feed:"📷 投稿を見る", btn_more:"▽ もっと見る（あと{n}人）",
@@ -838,8 +838,8 @@ const I18N = {
   en: {
     nav_live:"Live", nav_ranking:"Ranking", nav_new:"New", nav_coin:"Tokens", nav_howto:"How To", nav_cta:"Watch Free",
     hero_eyebrow:"JAPANESE CAST · CURATED GUIDE",
-    hero_h1:"Meet Real Japanese<br>Cam Girls <em>Tonight</em>",
-    hero_p:"A curated guide to authentic Japanese performers on Stripchat.<br>So many styles to discover — once you start, you won't look away.",
+    hero_h1:"The Girl You Love<br><em>Responds</em> to You",
+    hero_p:"Your support reaches the Japanese cast on screen. Every gift brings a special reaction — and messaging brings you closer still.",
     hero_btn_main:"▶ Watch Free Now", hero_btn_ghost:"How It Works",
     hero_note:"18+ only · Free signup · No credit card required",
     chip_free30:"Free signup · 30 sec", chip_nocard:"No card needed", chip_prepaid:"Pay only for what you use", chip_cancel:"Cancel anytime", chip_jp:"Japanese-friendly",
@@ -859,7 +859,7 @@ const I18N = {
     mood_h2:"Find Your <em>Ideal Type</em>", mood_p:"Pick a body type or status to find Japanese cam girls live right now. Combine filters freely.",
     filter_body:"Body", filter_state:"Status", filter_clear:"Clear filters",
     rank_h2:"Trending <em>Ranking</em>", rank_p:"Japanese cam girls who are live now, ranked by real-time viewer count.",
-    picks_h2:"Tonight's <em>Featured Cast</em>", picks_p:"Japanese cam girls live right now, auto-curated by buzz and newcomers. The lineup changes in real time. You can also jump to each cast's feed.",
+    picks_h2:"<em>Featured</em> Cast", picks_p:"Japanese cam girls live right now, auto-curated by buzz and newcomers. The lineup changes in real time. You can also jump to each cast's feed.",
     goal_h2:"Be Her <em>Hero</em>", goal_p:"Japanese cam girls rallying support toward a goal right now. Your tokens help push her over the line.",
     goal_bar:"🎯 Chasing a goal", goal_empty:"No Japanese cam girls with an active goal are live right now. Please check back a little later.", goal_cheer:"Cheer her on",
     coin_h2:"How <em>Tokens</em> Work", coin_p:"Stripchat is prepaid — you pay only for what you use. No monthly fee, no signup fee. Just buy tokens when you need them.",
@@ -878,11 +878,11 @@ const I18N = {
     step2_t:"Find a model", step2_d:"Filter by mood and type. Find Japanese cam girls in seconds.",
     step3_t:"Enjoy free", step3_d:"Most streams are free to watch. Like someone? Get closer with tokens.",
     faq_h2:"Frequently Asked <em>Questions</em>",
-    final_h2:"Meet her, <span class=\"accent\">tonight.</span>", final_p:"Popular casts are live this very moment. Sign up in 30 seconds, totally free, and open the door.", final_cta:"▶ Start Stripchat for free",
+    final_h2:"Go <span class=\"accent\">meet her.</span>", final_p:"Popular casts are live this very moment. Sign up in 30 seconds, totally free, and open the door.", final_cta:"▶ Start Stripchat for free",
     foot_ranking:"Ranking", foot_new:"New casts", foot_howto:"How-to guide", foot_coin:"Token guide", foot_about:"About this site", foot_disc:"Disclaimer",
     foot_note:"This site participates in the Stripchat affiliate program.<br>This service is intended for adults 18+. Minors are not permitted to access it.",
     pick_hot_ttl:"Buzzing Now", pick_hot_sub:"Live now",
-    pick_new_ttl:"Tonight's New Faces", pick_new_sub:"Just debuted",
+    pick_new_ttl:"New Faces", pick_new_sub:"Just debuted",
     body_thin:"Slim", body_average:"Average", body_athletic:"Athletic", body_curvy:"Curvy", body_large:"Plus-size",
     state_new:"🔰 New", state_boost:"🔥 Buzzing now",
     btn_watch:"▶ Watch now", btn_feed:"📷 View posts", btn_more:"▽ Show more ({n} more)",
@@ -1070,7 +1070,7 @@ function passFilter(c){
 const MOODS = [
   {emo:"❤️",lbl:"可愛い系"},{emo:"💎",lbl:"美人系"},{emo:"💅",lbl:"ギャル系"},
   {emo:"👫",lbl:"カップル"},{emo:"📹",lbl:"企画系"},{emo:"🔥",lbl:"ハード系"},
-  {emo:"🎀",lbl:"新人"},{emo:"🌙",lbl:"深夜配信"},
+  {emo:"🎀",lbl:"新人"},{emo:"✨",lbl:"おすすめ"},
 ];
 
 /* =========================================================
